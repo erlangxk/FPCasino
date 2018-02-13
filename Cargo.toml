@@ -1,0 +1,6 @@
+[package]
+name = "FPCasino"
+version = "0.1.0"
+authors = ["erlangxk <simon.xikun@gmail.com>"]
+
+[dependencies]
