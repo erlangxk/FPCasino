@@ -139,7 +139,7 @@ pub fn char_to_rank(c: char) -> Option<Rank> {
     }
 }
 
-#[derive(Clone, Copy,Debug)]
+#[derive(Clone, Copy, Debug)]
 pub struct Card {
     pub suit: Suit,
     pub rank: Rank,
@@ -148,14 +148,24 @@ pub struct Card {
 
 
 impl Card {
-    pub fn new(s: char, r: char) -> Option<Card> {
-        char_to_suit(s).and_then(|suit| char_to_rank(r).map(|rank| Card { suit, rank }))
+    pub fn new(sc: char, rc: char) -> Option<Card> {
+        char_to_suit(sc).and_then(|suit| char_to_rank(rc).map(|rank| Card { suit, rank }))
+    }
+
+    pub fn from_str(s: &str) -> Option<Card> {
+        let bs = s.as_bytes();
+        if bs.len() == 2 {
+            let sc = bs[0];
+            let rc = bs[1];
+            return Card::new(sc as char, rc as char);
+        }
+        None
     }
 
     pub fn is_same_rank(c1: Card, c2: Card) -> bool {
         c1.rank == c2.rank
     }
-    
+
     pub fn is_same_suit(c1: Card, c2: Card) -> bool {
         c1.suit == c2.suit
     }
