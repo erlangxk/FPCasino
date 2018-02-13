@@ -67,7 +67,7 @@ impl BaccaratDealer {
                             self.status = BaccaratStatus::ExpectBanker
                         }
                     }
-                    _ => panic!("banker cards is more than 3 now"),
+                    _ => panic!("player cards is more than 3 now"),
                 }
                 true
             }
@@ -140,7 +140,7 @@ mod tests {
         assert_eq!(bd.status, BaccaratStatus::Done);
         assert_eq!(result, true);
     }
-    
+
     #[test]
     fn test_cards_1() {
         let cards = vec![card("ST"), card("S9"), card("H2"), card("DQ")];
