@@ -1,5 +1,5 @@
 use super::dealer::init_baccarat_dealer;
-use super::total_points;
+use super::{total_points, value_of_card};
 use games::card::Card;
 
 #[derive(Debug)]
@@ -12,6 +12,12 @@ fn first2(cards: &Vec<Card>) -> (Card, Card) {
     (cards[0], cards[1])
 }
 
+fn count(cards: &[Card], v: u8) -> usize {
+    cards
+        .iter()
+        .fold(0, |a, c| if value_of_card(c) == v { a + 1 } else { a })
+}
+
 impl Baccarat {
     pub fn banker_total_points(&self) -> u8 {
         total_points(&self.banker_cards)
@@ -21,16 +27,20 @@ impl Baccarat {
         total_points(&self.player_cards)
     }
 
-    pub fn banker_first2(&self) -> (Card,Card) {
+    pub fn banker_first2(&self) -> (Card, Card) {
         first2(&self.banker_cards)
     }
 
-    pub fn player_first2(&self) -> (Card,Card) {
+    pub fn player_first2(&self) -> (Card, Card) {
         first2(&self.player_cards)
     }
 
     pub fn banker_total_cards(&self) -> usize {
         self.banker_cards.len()
+    }
+
+    pub fn count_cards(&self, v: u8) -> usize {
+        count(&self.banker_cards, v) + count(&self.player_cards, v)
     }
 
     pub fn from(cards: &Vec<Card>) -> Option<Baccarat> {

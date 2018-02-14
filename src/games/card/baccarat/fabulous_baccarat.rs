@@ -1,5 +1,4 @@
 use std::collections::{HashMap, HashSet};
-use std::fmt;
 use super::common::Baccarat;
 use games::card::Card;
 
