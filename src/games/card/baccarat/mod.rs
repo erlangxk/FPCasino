@@ -25,6 +25,6 @@ fn total_points(cards: &Vec<Card>) -> u8 {
 pub mod dealer;
 pub mod common;
 pub mod classical_baccarat;
-//pub mod fabulous_baccarat;
+pub mod fabulous_baccarat;
 //pub mod lucky_baccarat;
 //pub mod sevenup_baccarat;

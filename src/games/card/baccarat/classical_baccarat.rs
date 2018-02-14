@@ -1,6 +1,7 @@
 use std::collections::{HashMap, HashSet};
 use std::fmt;
 use super::common::Baccarat;
+use games::card::Card;
 
 #[derive(Hash, PartialEq, Eq, Debug)]
 pub enum Bets {
@@ -132,10 +133,12 @@ fn payout_map_common(
             result.insert(Bets::PlayerN9, 9.0);
         }
     }
-    if b.is_banker_pair() {
+    let (b1, b2) = b.banker_first2();
+    if Card::is_same_rank(b1, b2) {
         result.insert(Bets::BankerPair, 12.0);
     }
-    if b.is_player_pair() {
+    let (p1, p2) = b.player_first2();
+    if Card::is_same_rank(p1, p2) {
         result.insert(Bets::PlayerPair, 12.0);
     }
     result
@@ -194,8 +197,7 @@ mod tests {
         let cards = vec![card("ST"), card("S9"), card("H2"), card("DQ")];
         let result = Baccarat::from(&cards).unwrap();
         let pm = payout_map_commission(&result);
-        let r = hashmap!{ (Bets::Banker)=> 1.95, (Bets::BankerN9)=>9.0};
-        assert_eq!(pm, r);
+        assert_eq!(pm, hashmap!{ Bets::Banker=> 1.95, Bets::BankerN9=>9.0});
         let pm = payout_map_noncommission(&result);
         assert_eq!(pm, hashmap!{Bets::Banker=> 2.0, Bets::BankerN9=>9.0});
     }

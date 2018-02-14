@@ -21,14 +21,12 @@ impl Baccarat {
         total_points(&self.player_cards)
     }
 
-    pub fn is_banker_pair(&self) -> bool {
-        let f2 = first2(&self.banker_cards);
-        Card::is_same_rank(f2.0, f2.1)
+    pub fn banker_first2(&self) -> (Card,Card) {
+        first2(&self.banker_cards)
     }
 
-    pub fn is_player_pair(&self) -> bool {
-        let f2 = first2(&self.player_cards);
-        Card::is_same_rank(f2.0, f2.1)
+    pub fn player_first2(&self) -> (Card,Card) {
+        first2(&self.player_cards)
     }
 
     pub fn banker_total_cards(&self) -> usize {
@@ -66,8 +64,6 @@ mod tests {
         let result = Baccarat::from(&cards).unwrap();
         assert_eq!(9, result.banker_total_points());
         assert_eq!(2, result.player_total_points());
-        assert_eq!(false, result.is_banker_pair());
-        assert_eq!(false, result.is_player_pair());
         assert_eq!(2, result.banker_total_cards());
     }
 }
