@@ -6,28 +6,30 @@ trait Value {
 
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
 pub enum Suit {
-    DIAMOND,
-    CLUB,
-    HEART,
-    SPADE,
+    Diamond,
+    Club,
+    Heart,
+    Spade,
 }
 
 pub fn char_to_suit(c: char) -> Option<Suit> {
     match c {
-        'D' => Some(Suit::DIAMOND),
-        'C' => Some(Suit::CLUB),
-        'H' => Some(Suit::HEART),
-        'S' => Some(Suit::SPADE),
+        'D' => Some(Suit::Diamond),
+        'C' => Some(Suit::Club),
+        'H' => Some(Suit::Heart),
+        'S' => Some(Suit::Spade),
         _ => None,
     }
 }
 
-pub fn suit_to_char(suit: &Suit) -> char {
-    match *suit {
-        Suit::DIAMOND => 'D',
-        Suit::CLUB => 'C',
-        Suit::HEART => 'H',
-        Suit::SPADE => 'S',
+impl Into<char> for Suit {
+    fn into(self) -> char {
+        match self {
+            Suit::Diamond => 'D',
+            Suit::Club => 'C',
+            Suit::Heart => 'H',
+            Suit::Spade => 'S',
+        }
     }
 }
 
@@ -46,24 +48,6 @@ pub enum Rank {
     Jack,
     Queen,
     King,
-}
-
-pub fn rank_to_value_1(rank: Rank) -> u8 {
-    match rank {
-        Rank::Ace => 1,
-        Rank::Two => 2,
-        Rank::Three => 3,
-        Rank::Four => 4,
-        Rank::Five => 5,
-        Rank::Six => 6,
-        Rank::Seven => 7,
-        Rank::Eight => 8,
-        Rank::Nine => 9,
-        Rank::Ten => 0,
-        Rank::Jack => 0,
-        Rank::Queen => 0,
-        Rank::King => 0,
-    }
 }
 
 pub fn rank_to_value_2(rank: Rank) -> u8 {
@@ -102,21 +86,23 @@ pub fn rank_to_value_3(rank: Rank) -> u8 {
     }
 }
 
-pub fn rank_to_char(rank: Rank) -> char {
-    match rank {
-        Rank::Ace => 'A',
-        Rank::Two => '2',
-        Rank::Three => '3',
-        Rank::Four => '4',
-        Rank::Five => '5',
-        Rank::Six => '6',
-        Rank::Seven => '7',
-        Rank::Eight => '8',
-        Rank::Nine => '9',
-        Rank::Ten => 'T',
-        Rank::Jack => 'J',
-        Rank::Queen => 'Q',
-        Rank::King => 'K',
+impl Into<char> for Rank {
+    fn into(self) -> char {
+        match self {
+            Rank::Ace => 'A',
+            Rank::Two => '2',
+            Rank::Three => '3',
+            Rank::Four => '4',
+            Rank::Five => '5',
+            Rank::Six => '6',
+            Rank::Seven => '7',
+            Rank::Eight => '8',
+            Rank::Nine => '9',
+            Rank::Ten => 'T',
+            Rank::Jack => 'J',
+            Rank::Queen => 'Q',
+            Rank::King => 'K',
+        }
     }
 }
 
