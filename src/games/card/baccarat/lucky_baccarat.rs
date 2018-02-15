@@ -75,7 +75,7 @@ impl LuckyBaccarat {
 }
 
 pub fn payout_map(b: &Baccarat) -> HashMap<Bets, f64> {
-    let (tb,tp) = b.totals();
+    let (tb, tp) = b.totals();
     let mut result = HashMap::<Bets, f64>::new();
     let is_tie = tp == tb;
     let is_banker = tb > tp;
@@ -138,8 +138,12 @@ pub fn payout_map(b: &Baccarat) -> HashMap<Bets, f64> {
         result.insert(Bets::PlayerRed, 3.0);
     }
 
-    ratio_of_lucky_pair(&b1, &b2).and_then(|r| result.insert(Bets::BankerLuckyPair, r));
-    ratio_of_lucky_pair(&p1, &p2).and_then(|r| result.insert(Bets::PlayerLuckyPair, r));
+    if let Some(r) = ratio_of_lucky_pair(&b1, &b2) {
+        result.insert(Bets::BankerLuckyPair, r);
+    }
+    if let Some(r) = ratio_of_lucky_pair(&p1, &p2) {
+        result.insert(Bets::PlayerLuckyPair, r);
+    }
     result
 }
 
