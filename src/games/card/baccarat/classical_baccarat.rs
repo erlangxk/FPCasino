@@ -57,39 +57,43 @@ fn payout_map_common(
     b: &Baccarat,
     banker_fn: fn(&mut HashMap<Bets, f64>, u8),
 ) -> HashMap<Bets, f64> {
-    let tb = b.banker_total_points();
-    let tp = b.player_total_points();
+    let (tb, tp) = b.totals();
     let mut result = HashMap::<Bets, f64>::new();
-    if tb == tp {
+    let is_tie = tb == tp;
+    let is_banker = tb > tp;
+    let is_player = tb < tp;
+    if is_tie {
         result.insert(Bets::Banker, 1.0);
         result.insert(Bets::Player, 1.0);
         result.insert(Bets::Tie, 9.0);
-    } else if tb > tp {
+    } else if is_banker {
         banker_fn(&mut result, tb);
-        if tb == 8 {
-            result.insert(Bets::BankerN8, 9.0);
-        }
-        if tb == 9 {
-            result.insert(Bets::BankerN9, 9.0);
-        }
-        if tb == 6 {
-            result.insert(
-                Bets::Super6,
-                match b.banker_total_cards() {
-                    3 => 19.0,
-                    _ => 13.0,
-                },
-            );
-        }
     } else {
         result.insert(Bets::Player, 2.0);
-        if tp == 8 {
-            result.insert(Bets::PlayerN8, 9.0);
-        }
-        if tp == 9 {
-            result.insert(Bets::PlayerN9, 9.0);
-        }
     }
+
+    if is_banker && tb == 6 {
+        let r = match b.banker_total_cards() {
+            3 => 19.0,
+            _ => 13.0,
+        };
+        result.insert(Bets::Super6, r);
+    }
+
+    if is_banker && tb == 8 {
+        result.insert(Bets::BankerN8, 9.0);
+    }
+    if is_banker && tb == 9 {
+        result.insert(Bets::BankerN9, 9.0);
+    }
+
+    if is_player && tp == 8 {
+        result.insert(Bets::PlayerN8, 9.0);
+    }
+    if is_player && tp == 9 {
+        result.insert(Bets::PlayerN9, 9.0);
+    }
+
     let (b1, b2) = b.banker_first2();
     if b1.is_same_rank(&b2) {
         result.insert(Bets::BankerPair, 12.0);

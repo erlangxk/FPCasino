@@ -40,8 +40,7 @@ impl SevenupBaccarat {
 }
 
 pub fn payout_map(b: &Baccarat) -> HashMap<Bets, f64> {
-    let tp = b.player_total_points();
-    let tb = b.banker_total_points();
+    let (tb,tp) = b.totals();
     let mut result = HashMap::<Bets, f64>::new();
     if tb == tp {
         if tb == 7 {
