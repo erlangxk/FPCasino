@@ -117,7 +117,7 @@ pub fn payout_map(b: &Baccarat) -> HashMap<Bets, f64> {
             );
         } else if is_banker {
             wins_on(
-                tp,
+                tb,
                 (Bets::BankerWinsOn123, 32.0),
                 (Bets::BankerWinsOn456, 7.0),
                 (Bets::BankerWinsOn789, 3.0),
