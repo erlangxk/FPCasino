@@ -43,37 +43,34 @@ pub fn payout_map(b: &Baccarat) -> HashMap<Bets, f64> {
     let (tb, tp) = b.totals();
     let mut result = HashMap::<Bets, f64>::new();
     if tb == tp {
-        if tb == 7 {
-            result.insert(Bets::Tie, 10.0);
-        } else {
-            result.insert(Bets::Tie, 8.0);
-        }
+        result.insert(Bets::Tie, cmp(tb, 10.0, 8.0));
         result.insert(Bets::Banker, 1.0);
         result.insert(Bets::Player, 1.0);
     } else if tb > tp {
-        if tb == 7 {
-            result.insert(Bets::Banker, 2.5);
-        } else {
-            result.insert(Bets::Banker, 2.0);
-        }
+        result.insert(Bets::Banker, cmp(tb, 2.5, 2.0));
     } else {
-        if tp == 7 {
-            result.insert(Bets::Player, 1.5);
-        } else {
-            result.insert(Bets::Player, 2.0);
-        }
+        result.insert(Bets::Player, cmp(tp, 1.5, 2.0));
     }
-    let n7 = b.count_cards(7);
-    if n7 == 6 {
-        result.insert(Bets::Super7, 778.0);
-    } else if n7 == 5 {
-        result.insert(Bets::Super7, 78.0);
-    } else if n7 == 4 {
-        result.insert(Bets::Super7, 16.0);
-    } else if n7 == 3 {
-        result.insert(Bets::Super7, 7.0);
-    } else if n7 == 2 {
-        result.insert(Bets::Super7, 2.5);
+    if let Some(r) = ratio7(b.count_cards(7)) {
+        result.insert(Bets::Super7, r);
     }
     result
+}
+
+fn ratio7(n7: usize) -> Option<f64> {
+    match n7 {
+        6 => Some(778.0),
+        5 => Some(78.0),
+        4 => Some(16.0),
+        3 => Some(7.0),
+        2 => Some(2.5),
+        _ => None,
+    }
+}
+
+fn cmp(total: u8, f1: f64, f2: f64) -> f64 {
+    match total {
+        7 => f1,
+        _ => f2,
+    }
 }
