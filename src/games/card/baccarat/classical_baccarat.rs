@@ -57,11 +57,8 @@ fn payout_map_common(
     b: &Baccarat,
     banker_fn: fn(&mut HashMap<Bets, f64>, u8),
 ) -> HashMap<Bets, f64> {
-    let (tb, tp) = b.totals();
+    let (tb, tp, is_tie, is_banker, is_player) = b.result();
     let mut result = HashMap::<Bets, f64>::new();
-    let is_tie = tb == tp;
-    let is_banker = tb > tp;
-    let is_player = tb < tp;
     if is_tie {
         result.insert(Bets::Banker, 1.0);
         result.insert(Bets::Player, 1.0);

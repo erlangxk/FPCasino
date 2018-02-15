@@ -40,13 +40,13 @@ impl SevenupBaccarat {
 }
 
 pub fn payout_map(b: &Baccarat) -> HashMap<Bets, f64> {
-    let (tb, tp) = b.totals();
+    let (tb, tp, is_tie, is_banker, _) = b.result();
     let mut result = HashMap::<Bets, f64>::new();
-    if tb == tp {
+    if is_tie {
         result.insert(Bets::Tie, cmp(tb, 10.0, 8.0));
         result.insert(Bets::Banker, 1.0);
         result.insert(Bets::Player, 1.0);
-    } else if tb > tp {
+    } else if is_banker {
         result.insert(Bets::Banker, cmp(tb, 2.5, 2.0));
     } else {
         result.insert(Bets::Player, cmp(tp, 1.5, 2.0));

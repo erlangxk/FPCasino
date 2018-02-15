@@ -19,8 +19,10 @@ fn count(cards: &[Card], v: u8) -> usize {
 }
 
 impl Baccarat {
-    pub fn totals(&self) -> (u8,u8) {
-        (total_points(&self.banker_cards),total_points(&self.player_cards))
+    pub fn result(&self) -> (u8, u8, bool, bool, bool) {
+        let tb = total_points(&self.banker_cards);
+        let tp = total_points(&self.player_cards);
+        (tb, tp, tb == tp, tb > tp, tb < tp)
     }
 
     pub fn banker_first2(&self) -> (Card, Card) {

@@ -45,12 +45,9 @@ impl FabulousBaccarat {
 }
 
 pub fn payout_map(b: &Baccarat) -> HashMap<Bets, f64> {
-    let (tb, tp) = b.totals();
+    let (tb, tp, is_tie, is_banker, is_player) = b.result();
     let mut result = HashMap::<Bets, f64>::new();
-    let is_tie = tb == tp;
-    let is_banker = tb > tp;
-    let is_player = tb < tp;
-    
+
     if is_tie {
         result.insert(Bets::Tie, 9.0);
         result.insert(Bets::Banker, 1.0);
