@@ -58,10 +58,10 @@ pub fn payout_map(b: &Baccarat) -> HashMap<Bets, f64> {
         result.insert(Bets::Player, ratio(tp, 1.5, 3.0, 2.0));
     }
 
-    if (is_banker && tb == 4) {
+    if is_banker && tb == 4 {
         result.insert(Bets::BankerF4, 21.0);
     }
-    if (is_player && tp == 4) {
+    if is_player && tp == 4 {
         result.insert(Bets::PlayerF4, 41.0);
     }
 
