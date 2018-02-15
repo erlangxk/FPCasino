@@ -78,8 +78,8 @@ pub fn payout_map(b: &Baccarat) -> HashMap<Bets, f64> {
 
 fn fabulous_pair(result: &mut HashMap<Bets, f64>, first2: (Card, Card), bet: Bets) {
     let (c1, c2) = first2;
-    let bsr = Card::is_same_rank(c1, c2);
-    let bss = Card::is_same_suit(c1, c2);
+    let bsr = c1.is_same_rank(&c2);
+    let bss = c1.is_same_suit(&c2);
     if bsr && bss {
         result.insert(bet, 8.0);
     } else if bsr {

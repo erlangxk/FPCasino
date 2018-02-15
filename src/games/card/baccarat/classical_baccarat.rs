@@ -1,6 +1,5 @@
 use std::collections::{HashMap, HashSet};
 use super::common::Baccarat;
-use games::card::Card;
 
 #[derive(Hash, PartialEq, Eq, Debug)]
 pub enum Bets {
@@ -92,11 +91,11 @@ fn payout_map_common(
         }
     }
     let (b1, b2) = b.banker_first2();
-    if Card::is_same_rank(b1, b2) {
+    if b1.is_same_rank(&b2) {
         result.insert(Bets::BankerPair, 12.0);
     }
     let (p1, p2) = b.player_first2();
-    if Card::is_same_rank(p1, p2) {
+    if p1.is_same_rank(&p2) {
         result.insert(Bets::PlayerPair, 12.0);
     }
     result

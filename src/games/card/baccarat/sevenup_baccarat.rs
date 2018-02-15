@@ -1,6 +1,5 @@
 use std::collections::{HashMap, HashSet};
 use super::common::Baccarat;
-use games::card::Card;
 
 #[derive(Hash, PartialEq, Eq, Debug)]
 pub enum Bets {
