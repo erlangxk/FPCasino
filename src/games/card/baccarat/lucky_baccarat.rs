@@ -88,25 +88,25 @@ pub fn payout_map(b: &Baccarat) -> HashMap<Bets, f64> {
     if is_tie {
         if tb <= 3 {
             result.insert(Bets::TieOn0123, 46.0);
-        } else if tb >= 4 && tb <= 6 {
+        } else if tb <= 6 {
             result.insert(Bets::TieOn456, 25.0);
-        } else if tb >= 7 && tb <= 9 {
+        } else if tb <= 9 {
             result.insert(Bets::TieOn789, 20.0);
         }
     } else if is_banker {
-        if tb >= 1 && tb <= 3 {
+        if tb <= 3 {
             result.insert(Bets::BankerWinsOn123, 32.0);
-        } else if tb >= 4 && tb <= 6 {
+        } else if tb <= 6 {
             result.insert(Bets::BankerWinsOn456, 7.0);
-        } else if tb >= 7 && tb <= 9 {
+        } else if tb <= 9 {
             result.insert(Bets::BankerWinsOn789, 3.0);
         }
     } else {
-        if tp >= 1 && tp <= 3 {
+        if tp <= 3 {
             result.insert(Bets::PlayerWinsOn123, 32.0);
-        } else if tp >= 4 && tp <= 6 {
+        } else if tp <= 6 {
             result.insert(Bets::PlayerWinsOn456, 7.0);
-        } else if tp >= 7 && tp <= 9 {
+        } else if tp <= 9 {
             result.insert(Bets::PlayerWinsOn789, 3.0);
         }
     }
