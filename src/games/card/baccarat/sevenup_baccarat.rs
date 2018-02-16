@@ -74,3 +74,30 @@ fn cmp(total: u8, f1: f64, f2: f64) -> f64 {
         _ => f2,
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use games::card::serde::str_to_card;
+    use games::card::Card;
+    fn card(s: &str) -> Card {
+        str_to_card(s).unwrap()
+    }
+
+    #[test]
+    fn test_payout_1(){
+        let cards = vec![
+            card("D7"),
+            card("C2"),
+            card("CJ"),
+            card("CA"),
+            card("HJ"),
+        ];
+        let b = Baccarat::from(&cards).unwrap();
+        assert_eq!(3, b.banker_total_cards());
+        assert_eq!((3,7,false, false, true), b.result());
+        let m = payout_map(&b);
+        assert_eq!(m, hashmap!{Bets::Player=>1.5});
+    }
+    
+}
