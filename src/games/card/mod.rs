@@ -1,7 +1,7 @@
 pub mod baccarat;
 pub mod serde;
 
-#[derive(Clone, Copy, PartialEq, Eq, Debug)]
+#[derive(Clone, Copy, PartialEq, Eq, Debug, Hash)]
 pub enum Suit {
     Diamond,
     Club,
@@ -9,7 +9,7 @@ pub enum Suit {
     Spade,
 }
 
-#[derive(Clone, Copy, PartialEq, Eq, Debug)]
+#[derive(Clone, Copy, PartialEq, Eq, Debug, Hash)]
 pub enum Rank {
     Ace,
     Two,
@@ -26,7 +26,7 @@ pub enum Rank {
     King,
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub struct Card {
     pub suit: Suit,
     pub rank: Rank,

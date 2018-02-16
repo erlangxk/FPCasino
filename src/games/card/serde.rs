@@ -72,3 +72,84 @@ pub fn card_to_str(c: Card) -> String {
     s.push(rank_to_char(c.rank));
     s
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::collections::HashSet;
+
+    static ALL_RANKS: &[Rank] = &[
+        Rank::Ace,
+        Rank::Two,
+        Rank::Three,
+        Rank::Four,
+        Rank::Five,
+        Rank::Six,
+        Rank::Seven,
+        Rank::Eight,
+        Rank::Nine,
+        Rank::Ten,
+        Rank::Jack,
+        Rank::Queen,
+        Rank::King,
+    ];
+    static ALL_SUITS: &[Suit] = &[Suit::Club, Suit::Diamond, Suit::Heart, Suit::Spade];
+
+    #[test]
+    fn test_suit_to_char() {
+        assert_eq!('D', suit_to_char(Suit::Diamond));
+        assert_eq!('C', suit_to_char(Suit::Club));
+        assert_eq!('H', suit_to_char(Suit::Heart));
+        assert_eq!('S', suit_to_char(Suit::Spade));
+    }
+
+    #[test]
+    fn test_char_to_suit() {
+        assert_eq!(char_to_suit('D'), Some(Suit::Diamond));
+        assert_eq!(char_to_suit('C'), Some(Suit::Club));
+        assert_eq!(char_to_suit('H'), Some(Suit::Heart));
+        assert_eq!(char_to_suit('S'), Some(Suit::Spade));
+        assert_eq!(char_to_suit('X'), None);
+    }
+
+    #[test]
+    fn suit_serde() {
+        assert_eq!(4, ALL_SUITS.len());
+        let set: HashSet<Suit> = ALL_SUITS.iter().cloned().collect();
+        assert_eq!(4, set.len());
+        for r in ALL_SUITS {
+            let c = suit_to_char(*r);
+            assert_eq!(char_to_suit(c), Some(*r));
+        }
+    }
+
+    #[test]
+    fn rank_serde() {
+        assert_eq!(13, ALL_RANKS.len());
+        let set: HashSet<Rank> = ALL_RANKS.iter().cloned().collect();
+        assert_eq!(13, set.len());
+        for r in ALL_RANKS {
+            let c = rank_to_char(*r);
+            assert_eq!(char_to_rank(c), Some(*r));
+        }
+    }
+
+    #[test]
+    fn card_serde() {
+        let mut all_cards: Vec<Card> = Vec::new();
+        for s in ALL_SUITS {
+            for r in ALL_RANKS {
+                all_cards.push(Card {
+                    suit: *s,
+                    rank: *r,
+                });
+            }
+        }
+        assert_eq!(52, all_cards.len());
+        for c in all_cards {
+            let s = card_to_str(c);
+            let r = str_to_card(&s);
+            assert_eq!(r, Some(c));
+        }
+    }
+}
