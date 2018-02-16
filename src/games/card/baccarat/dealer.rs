@@ -111,8 +111,11 @@ impl BaccaratDealer {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use games::card::serde::str_to_card;
+    use games::card::Card;
+
     fn card(s: &str) -> Card {
-        Card::from_str(s).unwrap()
+        str_to_card(s).unwrap()
     }
 
     #[test]

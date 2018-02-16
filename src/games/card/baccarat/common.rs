@@ -62,16 +62,17 @@ impl Baccarat {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use games::card::serde::str_to_card;
+
     fn card(s: &str) -> Card {
-        Card::from_str(s).unwrap()
+        str_to_card(s).unwrap()
     }
 
     #[test]
     fn test_baccarat_from_cards() {
         let cards = vec![card("ST"), card("S9"), card("H2"), card("DQ")];
-        let result = Baccarat::from(&cards).unwrap();
-        assert_eq!(9, result.banker_total_points());
-        assert_eq!(2, result.player_total_points());
-        assert_eq!(2, result.banker_total_cards());
+        let b = Baccarat::from(&cards).unwrap();
+        assert_eq!((9, 2, false, true, false), b.result());
+        assert_eq!(2, b.banker_total_cards());
     }
 }
