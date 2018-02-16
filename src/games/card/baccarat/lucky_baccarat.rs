@@ -130,34 +130,15 @@ pub fn payout_map(b: &Baccarat) -> HashMap<Bets, f64> {
 
 fn wins_on(result: Result) -> (Bets, f64) {
     match result {
-        Result::Banker(t) => cmp(
-            t,
-            (Bets::BankerWinsOn123, 32.0),
-            (Bets::BankerWinsOn456, 7.0),
-            (Bets::BankerWinsOn789, 3.0),
-        ),
-        Result::Player(t) => cmp(
-            t,
-            (Bets::PlayerWinsOn123, 32.0),
-            (Bets::PlayerWinsOn456, 9.0),
-            (Bets::PlayerWinsOn789, 3.0),
-        ),
-        Result::Tie(t) => cmp(
-            t,
-            (Bets::TieOn0123, 46.0),
-            (Bets::TieOn456, 25.0),
-            (Bets::TieOn789, 20.0),
-        ),
-    }
-}
-
-fn cmp<T>(total: u8, f1: T, f2: T, f3: T) -> T {
-    if total <= 3 {
-        f1
-    } else if total <= 6 {
-        f2
-    } else {
-        f3
+        Result::Banker(1...3) => (Bets::BankerWinsOn123, 32.0),
+        Result::Banker(4...6) => (Bets::BankerWinsOn456, 7.0),
+        Result::Banker(_) => (Bets::BankerWinsOn789, 3.0),
+        Result::Player(1...3) => (Bets::PlayerWinsOn123, 32.0),
+        Result::Player(4...6) => (Bets::PlayerWinsOn456, 9.0),
+        Result::Player(_) => (Bets::PlayerWinsOn789, 3.0),
+        Result::Tie(0...3) => (Bets::TieOn0123, 46.0),
+        Result::Tie(4...6) => (Bets::TieOn456, 25.0),
+        Result::Tie(_) => (Bets::TieOn789, 20.0),
     }
 }
 
@@ -208,15 +189,15 @@ mod tests {
     }
 
     #[test]
-    fn test_wins_on(){
+    fn test_wins_on() {
         assert_eq!(wins_on(Result::Banker(1)), (Bets::BankerWinsOn123, 32.0));
         assert_eq!(wins_on(Result::Banker(2)), (Bets::BankerWinsOn123, 32.0));
         assert_eq!(wins_on(Result::Banker(3)), (Bets::BankerWinsOn123, 32.0));
-        
+
         assert_eq!(wins_on(Result::Banker(4)), (Bets::BankerWinsOn456, 7.0));
         assert_eq!(wins_on(Result::Banker(5)), (Bets::BankerWinsOn456, 7.0));
         assert_eq!(wins_on(Result::Banker(6)), (Bets::BankerWinsOn456, 7.0));
-        
+
         assert_eq!(wins_on(Result::Banker(7)), (Bets::BankerWinsOn789, 3.0));
         assert_eq!(wins_on(Result::Banker(8)), (Bets::BankerWinsOn789, 3.0));
         assert_eq!(wins_on(Result::Banker(9)), (Bets::BankerWinsOn789, 3.0));
@@ -224,11 +205,11 @@ mod tests {
         assert_eq!(wins_on(Result::Player(1)), (Bets::PlayerWinsOn123, 32.0));
         assert_eq!(wins_on(Result::Player(2)), (Bets::PlayerWinsOn123, 32.0));
         assert_eq!(wins_on(Result::Player(3)), (Bets::PlayerWinsOn123, 32.0));
-        
+
         assert_eq!(wins_on(Result::Player(4)), (Bets::PlayerWinsOn456, 9.0));
         assert_eq!(wins_on(Result::Player(5)), (Bets::PlayerWinsOn456, 9.0));
         assert_eq!(wins_on(Result::Player(6)), (Bets::PlayerWinsOn456, 9.0));
-        
+
         assert_eq!(wins_on(Result::Player(7)), (Bets::PlayerWinsOn789, 3.0));
         assert_eq!(wins_on(Result::Player(8)), (Bets::PlayerWinsOn789, 3.0));
         assert_eq!(wins_on(Result::Player(9)), (Bets::PlayerWinsOn789, 3.0));
@@ -237,11 +218,11 @@ mod tests {
         assert_eq!(wins_on(Result::Tie(1)), (Bets::TieOn0123, 46.0));
         assert_eq!(wins_on(Result::Tie(2)), (Bets::TieOn0123, 46.0));
         assert_eq!(wins_on(Result::Tie(3)), (Bets::TieOn0123, 46.0));
-        
+
         assert_eq!(wins_on(Result::Tie(4)), (Bets::TieOn456, 25.0));
         assert_eq!(wins_on(Result::Tie(5)), (Bets::TieOn456, 25.0));
         assert_eq!(wins_on(Result::Tie(6)), (Bets::TieOn456, 25.0));
-        
+
         assert_eq!(wins_on(Result::Tie(7)), (Bets::TieOn789, 20.0));
         assert_eq!(wins_on(Result::Tie(8)), (Bets::TieOn789, 20.0));
         assert_eq!(wins_on(Result::Tie(9)), (Bets::TieOn789, 20.0));
