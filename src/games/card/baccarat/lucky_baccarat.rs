@@ -95,39 +95,32 @@ pub fn payout_map(b: &Baccarat) -> HashMap<Bets, f64> {
     } else {
         result.insert(Bets::Player, 2.0);
     }
-    {
-        let mut wins_on = |total: u8, t3: (Bets, f64), t6: (Bets, f64), t9: (Bets, f64)| {
-            if total <= 3 {
-                result.insert(t3.0, t3.1);
-            } else if total <= 6 {
-                result.insert(t6.0, t6.1);
-            } else if total <= 9 {
-                result.insert(t9.0, t9.1);
-            }
-        };
+    let (bets, ratio) = {
         if is_tie {
-            wins_on(
+            cmp(
                 tb,
                 (Bets::TieOn0123, 46.0),
                 (Bets::TieOn456, 25.0),
                 (Bets::TieOn789, 20.0),
-            );
+            )
         } else if is_banker {
-            wins_on(
+            cmp(
                 tb,
                 (Bets::BankerWinsOn123, 32.0),
                 (Bets::BankerWinsOn456, 7.0),
                 (Bets::BankerWinsOn789, 3.0),
-            );
+            )
         } else {
-            wins_on(
+            cmp(
                 tp,
                 (Bets::PlayerWinsOn123, 32.0),
                 (Bets::PlayerWinsOn456, 7.0),
                 (Bets::PlayerWinsOn789, 3.0),
-            );
+            )
         }
-    }
+    };
+    result.insert(bets, ratio);
+
     {
         let mut side_bet = |pair: (Card, Card), bets: (Bets, Bets, Bets)| {
             let (c1, c2) = pair;
@@ -150,6 +143,16 @@ pub fn payout_map(b: &Baccarat) -> HashMap<Bets, f64> {
         );
     }
     result
+}
+
+fn cmp<T>(total: u8, f1: T, f2: T, f3: T) -> T {
+    if total <= 3 {
+        f1
+    } else if total <= 6 {
+        f2
+    } else {
+        f3
+    }
 }
 
 fn ratio_of_lucky_pair(c1: &Card, c2: &Card) -> Option<f64> {
