@@ -1,5 +1,5 @@
 use std::collections::{HashMap, HashSet};
-use super::common::Baccarat;
+use super::common::{Baccarat, Result};
 use games::card::{Card, Rank};
 
 #[derive(Hash, PartialEq, Eq, Debug)]
@@ -75,61 +75,41 @@ impl LuckyBaccarat {
 }
 
 pub fn payout_map(b: &Baccarat) -> HashMap<Bets, f64> {
-    let (tb, tp, is_banker, is_player, is_tie) = b.result();
-    let mut result = HashMap::<Bets, f64>::new();
+    let result = b.result2();
+    let mut map = HashMap::<Bets, f64>::new();
 
-    if (is_banker && tb == 6) || (is_player && tp == 6) || (is_tie && tb == 6) {
-        result.insert(Bets::Lucky6, 7.0);
+    if result.total_points() == 6 {
+        map.insert(Bets::Lucky6, 7.0);
     }
 
-    if is_tie {
-        result.insert(Bets::Tie, 9.0);
-        result.insert(Bets::Banker, 1.0);
-        result.insert(Bets::Player, 1.0);
-    } else if is_banker {
-        if tb == 6 {
-            result.insert(Bets::Banker, 1.5);
-        } else {
-            result.insert(Bets::Banker, 2.0);
+    match result {
+        Result::Tie(_) => {
+            map.insert(Bets::Tie, 9.0);
+            map.insert(Bets::Banker, 1.0);
+            map.insert(Bets::Player, 1.0);
         }
-    } else {
-        result.insert(Bets::Player, 2.0);
+        Result::Banker(6) => {
+            map.insert(Bets::Banker, 1.5);
+        }
+        Result::Banker(_) => {
+            map.insert(Bets::Banker, 2.0);
+        }
+        _ => {
+            map.insert(Bets::Player, 2.0);
+        }
     }
-    let (bets, ratio) = {
-        if is_tie {
-            cmp(
-                tb,
-                (Bets::TieOn0123, 46.0),
-                (Bets::TieOn456, 25.0),
-                (Bets::TieOn789, 20.0),
-            )
-        } else if is_banker {
-            cmp(
-                tb,
-                (Bets::BankerWinsOn123, 32.0),
-                (Bets::BankerWinsOn456, 7.0),
-                (Bets::BankerWinsOn789, 3.0),
-            )
-        } else {
-            cmp(
-                tp,
-                (Bets::PlayerWinsOn123, 32.0),
-                (Bets::PlayerWinsOn456, 7.0),
-                (Bets::PlayerWinsOn789, 3.0),
-            )
-        }
-    };
-    result.insert(bets, ratio);
+    let (bets, ratio) = wins_on(result);
+    map.insert(bets, ratio);
     {
         let mut side_bet = |pair: (Card, Card), b1: Bets, b2: Bets, b3: Bets| {
             let (c1, c2) = pair;
             if c1.is_black() && c2.is_black() {
-                result.insert(b1, 3.0);
+                map.insert(b1, 3.0);
             } else if c1.is_red() && c2.is_red() {
-                result.insert(b2, 3.0);
+                map.insert(b2, 3.0);
             }
             if let Some(r) = ratio_of_lucky_pair(&c1, &c2) {
-                result.insert(b3, r);
+                map.insert(b3, r);
             }
         };
         side_bet(
@@ -145,7 +125,30 @@ pub fn payout_map(b: &Baccarat) -> HashMap<Bets, f64> {
             Bets::PlayerLuckyPair,
         );
     }
-    result
+    map
+}
+
+fn wins_on(result: Result) -> (Bets, f64) {
+    match result {
+        Result::Banker(t) => cmp(
+            t,
+            (Bets::BankerWinsOn123, 32.0),
+            (Bets::BankerWinsOn456, 7.0),
+            (Bets::BankerWinsOn789, 3.0),
+        ),
+        Result::Player(t) => cmp(
+            t,
+            (Bets::PlayerWinsOn123, 32.0),
+            (Bets::PlayerWinsOn456, 9.0),
+            (Bets::PlayerWinsOn789, 3.0),
+        ),
+        Result::Tie(t) => cmp(
+            t,
+            (Bets::TieOn0123, 46.0),
+            (Bets::TieOn456, 25.0),
+            (Bets::TieOn789, 20.0),
+        ),
+    }
 }
 
 fn cmp<T>(total: u8, f1: T, f2: T, f3: T) -> T {
@@ -202,5 +205,45 @@ mod tests {
         assert_eq!(ratio_of_lucky_pair(&s5, &c5), Some(10.0));
         assert_eq!(ratio_of_lucky_pair(&d7, &d7), Some(13.0));
         assert_eq!(ratio_of_lucky_pair(&d4, &d7), None);
+    }
+
+    #[test]
+    fn test_wins_on(){
+        assert_eq!(wins_on(Result::Banker(1)), (Bets::BankerWinsOn123, 32.0));
+        assert_eq!(wins_on(Result::Banker(2)), (Bets::BankerWinsOn123, 32.0));
+        assert_eq!(wins_on(Result::Banker(3)), (Bets::BankerWinsOn123, 32.0));
+        
+        assert_eq!(wins_on(Result::Banker(4)), (Bets::BankerWinsOn456, 7.0));
+        assert_eq!(wins_on(Result::Banker(5)), (Bets::BankerWinsOn456, 7.0));
+        assert_eq!(wins_on(Result::Banker(6)), (Bets::BankerWinsOn456, 7.0));
+        
+        assert_eq!(wins_on(Result::Banker(7)), (Bets::BankerWinsOn789, 3.0));
+        assert_eq!(wins_on(Result::Banker(8)), (Bets::BankerWinsOn789, 3.0));
+        assert_eq!(wins_on(Result::Banker(9)), (Bets::BankerWinsOn789, 3.0));
+
+        assert_eq!(wins_on(Result::Player(1)), (Bets::PlayerWinsOn123, 32.0));
+        assert_eq!(wins_on(Result::Player(2)), (Bets::PlayerWinsOn123, 32.0));
+        assert_eq!(wins_on(Result::Player(3)), (Bets::PlayerWinsOn123, 32.0));
+        
+        assert_eq!(wins_on(Result::Player(4)), (Bets::PlayerWinsOn456, 9.0));
+        assert_eq!(wins_on(Result::Player(5)), (Bets::PlayerWinsOn456, 9.0));
+        assert_eq!(wins_on(Result::Player(6)), (Bets::PlayerWinsOn456, 9.0));
+        
+        assert_eq!(wins_on(Result::Player(7)), (Bets::PlayerWinsOn789, 3.0));
+        assert_eq!(wins_on(Result::Player(8)), (Bets::PlayerWinsOn789, 3.0));
+        assert_eq!(wins_on(Result::Player(9)), (Bets::PlayerWinsOn789, 3.0));
+
+        assert_eq!(wins_on(Result::Tie(0)), (Bets::TieOn0123, 46.0));
+        assert_eq!(wins_on(Result::Tie(1)), (Bets::TieOn0123, 46.0));
+        assert_eq!(wins_on(Result::Tie(2)), (Bets::TieOn0123, 46.0));
+        assert_eq!(wins_on(Result::Tie(3)), (Bets::TieOn0123, 46.0));
+        
+        assert_eq!(wins_on(Result::Tie(4)), (Bets::TieOn456, 25.0));
+        assert_eq!(wins_on(Result::Tie(5)), (Bets::TieOn456, 25.0));
+        assert_eq!(wins_on(Result::Tie(6)), (Bets::TieOn456, 25.0));
+        
+        assert_eq!(wins_on(Result::Tie(7)), (Bets::TieOn789, 20.0));
+        assert_eq!(wins_on(Result::Tie(8)), (Bets::TieOn789, 20.0));
+        assert_eq!(wins_on(Result::Tie(9)), (Bets::TieOn789, 20.0));
     }
 }

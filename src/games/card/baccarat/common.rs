@@ -2,6 +2,23 @@ use super::dealer::init_baccarat_dealer;
 use super::{total_points, value_of_card};
 use games::card::Card;
 
+#[derive(PartialEq, Eq)]
+pub enum Result {
+    Player(u8),
+    Banker(u8),
+    Tie(u8),
+}
+
+impl Result {
+    pub fn total_points(&self) -> u8 {
+        match *self {
+            Result::Player(n) => n,
+            Result::Banker(n) => n,
+            Result::Tie(n) => n,
+        }
+    }
+}
+
 #[derive(Debug)]
 pub struct Baccarat {
     banker_cards: Vec<Card>,
@@ -22,7 +39,19 @@ impl Baccarat {
     pub fn result(&self) -> (u8, u8, bool, bool, bool) {
         let tb = total_points(&self.banker_cards);
         let tp = total_points(&self.player_cards);
-        (tb, tp, tb > tp, tb < tp , tb == tp)
+        (tb, tp, tb > tp, tb < tp, tb == tp)
+    }
+
+    pub fn result2(&self) -> Result {
+        let tb = total_points(&self.banker_cards);
+        let tp = total_points(&self.player_cards);
+        if tb > tp {
+            Result::Banker(tb)
+        } else if tb < tp {
+            Result::Player(tp)
+        } else {
+            Result::Tie(tb)
+        }
     }
 
     pub fn banker_first2(&self) -> (Card, Card) {
