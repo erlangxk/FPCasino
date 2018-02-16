@@ -61,9 +61,13 @@ pub fn str_to_card(s: &str) -> Option<Card> {
     if bs.len() == 2 {
         let sc: char = bs[0] as char;
         let rc: char = bs[1] as char;
-        return char_to_suit(sc).and_then(|suit| char_to_rank(rc).map(|rank| Card { suit, rank }));
+        return two_char_to_card(sc,rc);
     }
     None
+}
+
+fn two_char_to_card(sc:char, rc:char)-> Option<Card> {
+    char_to_suit(sc).and_then(|suit| char_to_rank(rc).map(|rank| Card { suit, rank }))
 }
 
 pub fn card_to_str(c: Card) -> String {

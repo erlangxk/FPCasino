@@ -27,12 +27,13 @@ pub enum Bets {
 
 pub fn all_bets() -> HashSet<Bets> {
     hashset!{
-        Bets::Banker,Bets::Player,Bets::Tie,Bets::Lucky6,
+        Bets::Banker,Bets::Player,Bets::Tie,
         Bets::BankerBlack, Bets::BankerRed, Bets::BankerLuckyPair,
         Bets::PlayerBlack, Bets::PlayerRed, Bets::PlayerLuckyPair,
         Bets::BankerWinsOn123, Bets::BankerWinsOn456, Bets::BankerWinsOn789,
         Bets::PlayerWinsOn123, Bets::PlayerWinsOn456, Bets::PlayerWinsOn789,
         Bets::TieOn0123, Bets::TieOn456,Bets::TieOn789,
+        Bets::Lucky6,
     }
 }
 
@@ -45,7 +46,7 @@ pub fn bets_after40() -> HashSet<Bets> {
 }
 
 pub fn bets_after60() -> HashSet<Bets> {
-    hashset!{ Bets::Banker,Bets::Player,Bets::Tie}
+    hashset!{ Bets::Banker,Bets::Player,Bets::Tie }
 }
 
 struct LuckyBaccarat {
@@ -226,5 +227,50 @@ mod tests {
         assert_eq!(wins_on(Result::Tie(7)), (Bets::TieOn789, 20.0));
         assert_eq!(wins_on(Result::Tie(8)), (Bets::TieOn789, 20.0));
         assert_eq!(wins_on(Result::Tie(9)), (Bets::TieOn789, 20.0));
+    }
+
+    #[test]
+    fn test_valid_bets() {
+        let b = LuckyBaccarat::new();
+
+        let all = b.valid_bets(40);
+        assert_eq!(19, all.len());
+        assert_eq!(*all, all_bets());
+
+        let after40 = b.valid_bets(41);
+        assert_eq!(9, after40.len());
+        assert_eq!(false, after40.contains(&Bets::BankerWinsOn123));
+        assert_eq!(false, after40.contains(&Bets::BankerWinsOn456));
+        assert_eq!(false, after40.contains(&Bets::BankerWinsOn789));
+        assert_eq!(false, after40.contains(&Bets::PlayerWinsOn123));
+        assert_eq!(false, after40.contains(&Bets::PlayerWinsOn456));
+        assert_eq!(false, after40.contains(&Bets::PlayerWinsOn789));
+        assert_eq!(false, after40.contains(&Bets::TieOn0123));
+        assert_eq!(false, after40.contains(&Bets::TieOn456));
+        assert_eq!(false, after40.contains(&Bets::TieOn789));
+        assert_eq!(false, after40.contains(&Bets::Lucky6));
+
+
+        let after40 = b.valid_bets(60);
+        assert_eq!(9, after40.len());
+        assert_eq!(false, after40.contains(&Bets::BankerWinsOn123));
+        assert_eq!(false, after40.contains(&Bets::BankerWinsOn456));
+        assert_eq!(false, after40.contains(&Bets::BankerWinsOn789));
+        assert_eq!(false, after40.contains(&Bets::PlayerWinsOn123));
+        assert_eq!(false, after40.contains(&Bets::PlayerWinsOn456));
+        assert_eq!(false, after40.contains(&Bets::PlayerWinsOn789));
+        assert_eq!(false, after40.contains(&Bets::TieOn0123));
+        assert_eq!(false, after40.contains(&Bets::TieOn456));
+        assert_eq!(false, after40.contains(&Bets::TieOn789));
+        assert_eq!(false, after40.contains(&Bets::Lucky6));
+
+        let after60 = b.valid_bets(61);
+        assert_eq!(3, after60.len());
+        assert_eq!(false, after60.contains(&Bets::BankerBlack));
+        assert_eq!(false, after60.contains(&Bets::BankerRed));
+        assert_eq!(false, after60.contains(&Bets::BankerLuckyPair));
+        assert_eq!(false, after60.contains(&Bets::PlayerBlack));
+        assert_eq!(false, after60.contains(&Bets::PlayerRed));
+        assert_eq!(false, after60.contains(&Bets::PlayerLuckyPair));
     }
 }
