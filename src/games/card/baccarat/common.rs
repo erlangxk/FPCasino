@@ -22,7 +22,7 @@ impl Baccarat {
     pub fn result(&self) -> (u8, u8, bool, bool, bool) {
         let tb = total_points(&self.banker_cards);
         let tp = total_points(&self.player_cards);
-        (tb, tp, tb == tp, tb > tp, tb < tp)
+        (tb, tp, tb > tp, tb < tp , tb == tp)
     }
 
     pub fn banker_first2(&self) -> (Card, Card) {
@@ -72,7 +72,7 @@ mod tests {
     fn test_baccarat_from_cards() {
         let cards = vec![card("ST"), card("S9"), card("H2"), card("DQ")];
         let b = Baccarat::from(&cards).unwrap();
-        assert_eq!((9, 2, false, true, false), b.result());
+        assert_eq!((9, 2, true, false, false), b.result());
         assert_eq!(2, b.banker_total_cards());
     }
 }

@@ -40,7 +40,7 @@ impl SevenupBaccarat {
 }
 
 pub fn payout_map(b: &Baccarat) -> HashMap<Bets, f64> {
-    let (tb, tp, is_tie, is_banker, _) = b.result();
+    let (tb, tp, is_banker, _, is_tie) = b.result();
     let mut result = HashMap::<Bets, f64>::new();
     if is_tie {
         result.insert(Bets::Tie, cmp(tb, 10.0, 8.0));
@@ -95,7 +95,7 @@ mod tests {
         ];
         let b = Baccarat::from(&cards).unwrap();
         assert_eq!(3, b.banker_total_cards());
-        assert_eq!((3,7,false, false, true), b.result());
+        assert_eq!((3,7,false, true, false), b.result());
         let m = payout_map(&b);
         assert_eq!(m, hashmap!{Bets::Player=>1.5});
     }
