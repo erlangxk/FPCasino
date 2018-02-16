@@ -120,26 +120,29 @@ pub fn payout_map(b: &Baccarat) -> HashMap<Bets, f64> {
         }
     };
     result.insert(bets, ratio);
-
     {
-        let mut side_bet = |pair: (Card, Card), bets: (Bets, Bets, Bets)| {
+        let mut side_bet = |pair: (Card, Card), b1: Bets, b2: Bets, b3: Bets| {
             let (c1, c2) = pair;
             if c1.is_black() && c2.is_black() {
-                result.insert(bets.0, 3.0);
+                result.insert(b1, 3.0);
             } else if c1.is_red() && c2.is_red() {
-                result.insert(bets.1, 3.0);
+                result.insert(b2, 3.0);
             }
             if let Some(r) = ratio_of_lucky_pair(&c1, &c2) {
-                result.insert(bets.2, r);
+                result.insert(b3, r);
             }
         };
         side_bet(
             b.banker_first2(),
-            (Bets::BankerBlack, Bets::BankerRed, Bets::BankerLuckyPair),
+            Bets::BankerBlack,
+            Bets::BankerRed,
+            Bets::BankerLuckyPair,
         );
         side_bet(
             b.player_first2(),
-            (Bets::PlayerBlack, Bets::PlayerRed, Bets::PlayerLuckyPair),
+            Bets::PlayerBlack,
+            Bets::PlayerRed,
+            Bets::PlayerLuckyPair,
         );
     }
     result
@@ -171,4 +174,33 @@ fn ratio_of_lucky_pair(c1: &Card, c2: &Card) -> Option<f64> {
         return Some(10.0);
     }
     None
+}
+
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use games::card::serde::str_to_card;
+    use games::card::Card;
+    fn card(s: &str) -> Card {
+        str_to_card(s).unwrap()
+    }
+
+    #[test]
+    fn test_ratio_of_lucky_pair() {
+        let d4 = card("D4");
+        let c4 = card("C4");
+        let h4 = card("H4");
+        let c5 = card("C5");
+        let s5 = card("S5");
+        let d7 = card("D7");
+        assert_eq!(ratio_of_lucky_pair(&d4, &d4), Some(31.0));
+        assert_eq!(ratio_of_lucky_pair(&d4, &c4), Some(16.0));
+        assert_eq!(ratio_of_lucky_pair(&h4, &c4), Some(16.0));
+        assert_eq!(ratio_of_lucky_pair(&h4, &h4), Some(16.0));
+        assert_eq!(ratio_of_lucky_pair(&c5, &c5), Some(10.0));
+        assert_eq!(ratio_of_lucky_pair(&s5, &c5), Some(10.0));
+        assert_eq!(ratio_of_lucky_pair(&d7, &d7), Some(13.0));
+        assert_eq!(ratio_of_lucky_pair(&d4, &d7), None);
+    }
 }
