@@ -2,7 +2,7 @@ use super::dealer::init_baccarat_dealer;
 use super::{total_points, value_of_card};
 use games::card::Card;
 
-#[derive(PartialEq, Eq, Clone, Copy)]
+#[derive(PartialEq, Eq, Clone, Copy, Debug)]
 pub enum Result {
     Player(u8),
     Banker(u8),
@@ -36,12 +36,6 @@ fn count(cards: &[Card], v: u8) -> usize {
 }
 
 impl Baccarat {
-    pub fn result(&self) -> (u8, u8, bool, bool, bool) {
-        let tb = total_points(&self.banker_cards);
-        let tp = total_points(&self.player_cards);
-        (tb, tp, tb > tp, tb < tp, tb == tp)
-    }
-
     pub fn result2(&self) -> Result {
         let tb = total_points(&self.banker_cards);
         let tp = total_points(&self.player_cards);
@@ -101,7 +95,7 @@ mod tests {
     fn test_baccarat_from_cards() {
         let cards = vec![card("ST"), card("S9"), card("H2"), card("DQ")];
         let b = Baccarat::from(&cards).unwrap();
-        assert_eq!((9, 2, true, false, false), b.result());
+        assert_eq!(Result::Banker(9), b.result2());
         assert_eq!(2, b.banker_total_cards());
     }
 }
