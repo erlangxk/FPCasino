@@ -76,13 +76,41 @@ impl LuckyBaccarat {
 }
 
 pub fn payout_map(b: &Baccarat) -> HashMap<Bets, f64> {
-    let result = b.result2();
-    let mut map = HashMap::<Bets, f64>::new();
+    let mut map = result_payout_map(b.result2());
+    side_bet(
+        b.banker_first2(),
+        Bets::BankerBlack,
+        Bets::BankerRed,
+        Bets::BankerLuckyPair,
+        &mut map,
+    );
+    side_bet(
+        b.player_first2(),
+        Bets::PlayerBlack,
+        Bets::PlayerRed,
+        Bets::PlayerLuckyPair,
+        &mut map,
+    );
+    map
+}
 
+fn side_bet(pair: (Card, Card), b1: Bets, b2: Bets, b3: Bets, map: &mut HashMap<Bets, f64>) {
+    let (c1, c2) = pair;
+    if c1.is_black() && c2.is_black() {
+        map.insert(b1, 3.0);
+    } else if c1.is_red() && c2.is_red() {
+        map.insert(b2, 3.0);
+    }
+    if let Some(r) = ratio_of_lucky_pair(&c1, &c2) {
+        map.insert(b3, r);
+    }
+}
+
+fn result_payout_map(result: Result) -> HashMap<Bets, f64> {
+    let mut map = HashMap::<Bets, f64>::new();
     if result.total_points() == 6 {
         map.insert(Bets::Lucky6, 7.0);
     }
-
     match result {
         Result::Tie(_) => {
             map.insert(Bets::Tie, 9.0);
@@ -101,31 +129,6 @@ pub fn payout_map(b: &Baccarat) -> HashMap<Bets, f64> {
     }
     let (bets, ratio) = wins_on(result);
     map.insert(bets, ratio);
-    {
-        let mut side_bet = |pair: (Card, Card), b1: Bets, b2: Bets, b3: Bets| {
-            let (c1, c2) = pair;
-            if c1.is_black() && c2.is_black() {
-                map.insert(b1, 3.0);
-            } else if c1.is_red() && c2.is_red() {
-                map.insert(b2, 3.0);
-            }
-            if let Some(r) = ratio_of_lucky_pair(&c1, &c2) {
-                map.insert(b3, r);
-            }
-        };
-        side_bet(
-            b.banker_first2(),
-            Bets::BankerBlack,
-            Bets::BankerRed,
-            Bets::BankerLuckyPair,
-        );
-        side_bet(
-            b.player_first2(),
-            Bets::PlayerBlack,
-            Bets::PlayerRed,
-            Bets::PlayerLuckyPair,
-        );
-    }
     map
 }
 
@@ -273,4 +276,89 @@ mod tests {
         assert_eq!(false, after60.contains(&Bets::PlayerRed));
         assert_eq!(false, after60.contains(&Bets::PlayerLuckyPair));
     }
+
+    #[test]
+    fn test_result_payout_map_tie(){
+        let r = result_payout_map(Result::Tie(0));
+        assert_eq!(r, hashmap!{Bets::TieOn0123 => 46.0, Bets::Tie =>9.0, Bets::Player => 1.0, Bets::Banker => 1.0});
+        let r = result_payout_map(Result::Tie(1));
+        assert_eq!(r, hashmap!{Bets::TieOn0123 => 46.0, Bets::Tie =>9.0, Bets::Player => 1.0, Bets::Banker => 1.0});
+        let r = result_payout_map(Result::Tie(2));
+        assert_eq!(r, hashmap!{Bets::TieOn0123 => 46.0, Bets::Tie =>9.0, Bets::Player => 1.0, Bets::Banker => 1.0});
+        let r = result_payout_map(Result::Tie(3));
+        assert_eq!(r, hashmap!{Bets::TieOn0123 => 46.0, Bets::Tie =>9.0, Bets::Player => 1.0, Bets::Banker => 1.0});
+        let r = result_payout_map(Result::Tie(4));
+        assert_eq!(r, hashmap!{Bets::TieOn456 => 25.0, Bets::Tie =>9.0, Bets::Player => 1.0, Bets::Banker => 1.0});
+        let r = result_payout_map(Result::Tie(5));
+        assert_eq!(r, hashmap!{Bets::TieOn456 => 25.0, Bets::Tie =>9.0, Bets::Player => 1.0, Bets::Banker => 1.0});
+        let r = result_payout_map(Result::Tie(6));
+        assert_eq!(r, hashmap!{Bets::TieOn456 => 25.0, Bets::Tie =>9.0, Bets::Player => 1.0, Bets::Banker => 1.0, Bets::Lucky6 =>7.0});
+        let r = result_payout_map(Result::Tie(7));
+        assert_eq!(r, hashmap!{Bets::TieOn789 => 20.0, Bets::Tie =>9.0, Bets::Player => 1.0, Bets::Banker => 1.0});
+        let r = result_payout_map(Result::Tie(8));
+        assert_eq!(r, hashmap!{Bets::TieOn789 => 20.0, Bets::Tie =>9.0, Bets::Player => 1.0, Bets::Banker => 1.0});
+        let r = result_payout_map(Result::Tie(9));
+        assert_eq!(r, hashmap!{Bets::TieOn789 => 20.0, Bets::Tie =>9.0, Bets::Player => 1.0, Bets::Banker => 1.0});
+    }
+
+    #[test]
+    fn test_result_payout_map_banker(){
+        let r = result_payout_map(Result::Banker(1));
+        assert_eq!(r, hashmap!{Bets::BankerWinsOn123 => 32.0, Bets::Banker => 2.0});
+
+        let r = result_payout_map(Result::Banker(2));
+        assert_eq!(r, hashmap!{Bets::BankerWinsOn123 => 32.0, Bets::Banker => 2.0});
+
+        let r = result_payout_map(Result::Banker(3));
+        assert_eq!(r, hashmap!{Bets::BankerWinsOn123 => 32.0, Bets::Banker => 2.0});
+
+        let r = result_payout_map(Result::Banker(4));
+        assert_eq!(r, hashmap!{Bets::BankerWinsOn456 => 7.0, Bets::Banker => 2.0});
+        
+        let r = result_payout_map(Result::Banker(5));
+        assert_eq!(r, hashmap!{Bets::BankerWinsOn456 => 7.0, Bets::Banker => 2.0});
+        
+        let r = result_payout_map(Result::Banker(6));
+        assert_eq!(r, hashmap!{Bets::BankerWinsOn456 => 7.0, Bets::Banker => 1.5, Bets::Lucky6 => 7.0});
+        
+        let r = result_payout_map(Result::Banker(7));
+        assert_eq!(r, hashmap!{Bets::BankerWinsOn789 => 3.0, Bets::Banker => 2.0});
+        
+        let r = result_payout_map(Result::Banker(8));
+        assert_eq!(r, hashmap!{Bets::BankerWinsOn789 => 3.0, Bets::Banker => 2.0});
+
+        let r = result_payout_map(Result::Banker(9));
+        assert_eq!(r, hashmap!{Bets::BankerWinsOn789 => 3.0, Bets::Banker => 2.0});
+    }
+
+     #[test]
+    fn test_result_payout_map_player(){
+        let r = result_payout_map(Result::Player(1));
+        assert_eq!(r, hashmap!{Bets::PlayerWinsOn123 => 32.0, Bets::Player => 2.0});
+
+        let r = result_payout_map(Result::Player(2));
+        assert_eq!(r, hashmap!{Bets::PlayerWinsOn123 => 32.0, Bets::Player => 2.0});
+
+        let r = result_payout_map(Result::Player(3));
+        assert_eq!(r, hashmap!{Bets::PlayerWinsOn123 => 32.0, Bets::Player => 2.0});
+
+        let r = result_payout_map(Result::Player(4));
+        assert_eq!(r, hashmap!{Bets::PlayerWinsOn456 => 9.0, Bets::Player => 2.0});
+
+        let r = result_payout_map(Result::Player(5));
+        assert_eq!(r, hashmap!{Bets::PlayerWinsOn456 => 9.0, Bets::Player => 2.0});
+
+        let r = result_payout_map(Result::Player(6));
+        assert_eq!(r, hashmap!{Bets::PlayerWinsOn456 => 9.0, Bets::Player => 2.0, Bets::Lucky6 => 7.0});
+
+        let r = result_payout_map(Result::Player(7));
+        assert_eq!(r, hashmap!{Bets::PlayerWinsOn789 => 3.0, Bets::Player => 2.0});
+
+        let r = result_payout_map(Result::Player(8));
+        assert_eq!(r, hashmap!{Bets::PlayerWinsOn789 => 3.0, Bets::Player => 2.0});
+        
+        let r = result_payout_map(Result::Player(9));
+        assert_eq!(r, hashmap!{Bets::PlayerWinsOn789 => 3.0, Bets::Player => 2.0});
+    }
+
 }
