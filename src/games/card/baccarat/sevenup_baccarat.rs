@@ -40,7 +40,14 @@ impl SevenupBaccarat {
 }
 
 pub fn payout_map(b: &Baccarat) -> HashMap<Bets, f64> {
-    let result = b.result2();
+    let mut map = result_payout_map(b.result2());
+    if let Some(r) = ratio7(b.count_cards(7)) {
+        map.insert(Bets::Super7, r);
+    }
+    map
+}
+
+fn result_payout_map(result: Result) -> HashMap<Bets, f64> {
     let mut map = HashMap::<Bets, f64>::new();
     match result {
         Result::Tie(7) => {
@@ -65,9 +72,6 @@ pub fn payout_map(b: &Baccarat) -> HashMap<Bets, f64> {
     if let Result::Tie(_) = result {
         map.insert(Bets::Banker, 1.0);
         map.insert(Bets::Player, 1.0);
-    }
-    if let Some(r) = ratio7(b.count_cards(7)) {
-        map.insert(Bets::Super7, r);
     }
     map
 }
