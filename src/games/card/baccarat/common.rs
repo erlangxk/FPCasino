@@ -2,7 +2,7 @@ use super::dealer::init_baccarat_dealer;
 use super::{total_points, value_of_card};
 use games::card::Card;
 
-#[derive(PartialEq, Eq)]
+#[derive(PartialEq, Eq, Clone, Copy)]
 pub enum Result {
     Player(u8),
     Banker(u8),
