@@ -60,6 +60,10 @@ impl Baccarat {
         self.banker_cards.len()
     }
 
+    pub fn total_cards(&self) -> usize {
+        self.banker_total_cards() + self.player_cards.len()
+    }
+
     pub fn count_cards(&self, v: u8) -> usize {
         count(&self.banker_cards, v) + count(&self.player_cards, v)
     }
