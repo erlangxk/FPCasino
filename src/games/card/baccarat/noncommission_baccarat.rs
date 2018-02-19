@@ -130,4 +130,47 @@ mod tests {
         let r = b.valid_bets(71);
         assert_eq!(8, r.len())
     }
+
+     #[test]
+    fn test_result_payout_map_tie() {
+        let expected = hashmap!{Bets::Tie =>9.0, Bets::Player => 1.0, Bets::Banker => 1.0};
+        assert_eq!(result_payout_map(Result::Tie(0)),expected);
+        assert_eq!(result_payout_map(Result::Tie(1)),expected);
+        assert_eq!(result_payout_map(Result::Tie(2)),expected);
+        assert_eq!(result_payout_map(Result::Tie(3)),expected);
+        assert_eq!(result_payout_map(Result::Tie(4)),expected);
+        assert_eq!(result_payout_map(Result::Tie(5)),expected);
+        assert_eq!(result_payout_map(Result::Tie(6)),expected);
+        assert_eq!(result_payout_map(Result::Tie(7)),expected);
+        assert_eq!(result_payout_map(Result::Tie(8)),expected);
+        assert_eq!(result_payout_map(Result::Tie(9)),expected);
+    }
+
+    #[test]
+    fn test_result_payout_map_banker() {
+        let expected = hashmap!{Bets::Banker => 2.0};
+        assert_eq!(result_payout_map(Result::Banker(1)),expected);
+        assert_eq!(result_payout_map(Result::Banker(2)),expected);
+        assert_eq!(result_payout_map(Result::Banker(3)),expected);
+        assert_eq!(result_payout_map(Result::Banker(4)),expected);
+        assert_eq!(result_payout_map(Result::Banker(5)),expected);
+        assert_eq!(result_payout_map(Result::Banker(6)),hashmap!{Bets::Banker => 1.5});
+        assert_eq!(result_payout_map(Result::Banker(7)),expected);
+        assert_eq!(result_payout_map(Result::Banker(8)),hashmap!{Bets::Banker => 2.0, Bets::BankerN8 => 9.0});
+        assert_eq!(result_payout_map(Result::Banker(9)),hashmap!{Bets::Banker => 2.0, Bets::BankerN9 => 9.0});
+    }
+
+    #[test]
+    fn test_result_payout_map_player() {
+       let expected = hashmap!{Bets::Player => 2.0};
+       assert_eq!(result_payout_map(Result::Player(1)),expected);
+       assert_eq!(result_payout_map(Result::Player(2)),expected);
+       assert_eq!(result_payout_map(Result::Player(3)),expected);
+       assert_eq!(result_payout_map(Result::Player(4)),expected);
+       assert_eq!(result_payout_map(Result::Player(5)),expected);
+       assert_eq!(result_payout_map(Result::Player(6)),expected);
+       assert_eq!(result_payout_map(Result::Player(7)),expected);
+       assert_eq!(result_payout_map(Result::Player(8)),hashmap!{Bets::Player => 2.0, Bets::PlayerN8 =>9.0});
+       assert_eq!(result_payout_map(Result::Player(9)),hashmap!{Bets::Player => 2.0, Bets::PlayerN9 =>9.0});
+    }
 }
