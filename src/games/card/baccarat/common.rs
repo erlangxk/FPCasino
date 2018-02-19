@@ -36,7 +36,7 @@ fn count(cards: &[Card], v: u8) -> usize {
 }
 
 impl Baccarat {
-    pub fn result2(&self) -> Result {
+    pub fn result(&self) -> Result {
         let tb = total_points(&self.banker_cards);
         let tp = total_points(&self.player_cards);
         if tb > tp {
@@ -95,7 +95,7 @@ mod tests {
     fn test_baccarat_from_cards() {
         let cards = vec![card("ST"), card("S9"), card("H2"), card("DQ")];
         let b = Baccarat::from(&cards).unwrap();
-        assert_eq!(Result::Banker(9), b.result2());
+        assert_eq!(Result::Banker(9), b.result());
         assert_eq!(2, b.banker_total_cards());
     }
 }

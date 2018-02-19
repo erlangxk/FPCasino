@@ -45,7 +45,7 @@ impl FabulousBaccarat {
 }
 
 pub fn payout_map(b: &Baccarat) -> HashMap<Bets, f64> {
-    let mut map = result_payout_map(b.result2());
+    let mut map = result_payout_map(b.result());
     if let Some(r) = fabulous_pair(b.banker_first2()) {
         map.insert(Bets::BankerFPair, r);
     }

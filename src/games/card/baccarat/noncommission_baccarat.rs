@@ -42,7 +42,7 @@ pub fn bets_after70() -> HashSet<Bets> {
 }
 
 fn payout_map(b: &Baccarat) -> HashMap<Bets, f64> {
-    let result = b.result2();
+    let result = b.result();
     let mut map = result_payout_map(result);
     if let Result::Banker(6) = result {
         let r = match b.banker_total_cards() {

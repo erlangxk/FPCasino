@@ -76,7 +76,7 @@ impl LuckyBaccarat {
 }
 
 pub fn payout_map(b: &Baccarat) -> HashMap<Bets, f64> {
-    let mut map = result_payout_map(b.result2());
+    let mut map = result_payout_map(b.result());
     side_bet(
         b.banker_first2(),
         Bets::BankerBlack,

@@ -40,7 +40,7 @@ impl SevenupBaccarat {
 }
 
 pub fn payout_map(b: &Baccarat) -> HashMap<Bets, f64> {
-    let mut map = result_payout_map(b.result2());
+    let mut map = result_payout_map(b.result());
     if let Some(r) = ratio7(b.count_cards(7)) {
         map.insert(Bets::Super7, r);
     }
@@ -101,7 +101,7 @@ mod tests {
         let cards = vec![card("D7"), card("C2"), card("CJ"), card("CA"), card("HJ")];
         let b = Baccarat::from(&cards).unwrap();
         assert_eq!(3, b.banker_total_cards());
-        assert_eq!(Result::Player(7), b.result2());
+        assert_eq!(Result::Player(7), b.result());
         let m = payout_map(&b);
         assert_eq!(m, hashmap!{Bets::Player=>1.5});
     }
@@ -111,7 +111,7 @@ mod tests {
         let cards = vec![card("D7"), card("S4"), card("SA"), card("CJ")];
         let b = Baccarat::from(&cards).unwrap();
         assert_eq!(2, b.banker_total_cards());
-        assert_eq!(Result::Player(8), b.result2());
+        assert_eq!(Result::Player(8), b.result());
         let m = payout_map(&b);
         assert_eq!(m, hashmap!{Bets::Player=>2.0});
     }
@@ -128,7 +128,7 @@ mod tests {
         ];
         let b = Baccarat::from(&cards).unwrap();
         assert_eq!(3, b.banker_total_cards());
-        assert_eq!(Result::Banker(7), b.result2());
+        assert_eq!(Result::Banker(7), b.result());
         let m = payout_map(&b);
         assert_eq!(m, hashmap!{Bets::Banker=>2.5, Bets::Super7=>2.5});
     }
@@ -138,7 +138,7 @@ mod tests {
         let cards = vec![card("D7"), card("H8"), card("D5"), card("ST")];
         let b = Baccarat::from(&cards).unwrap();
         assert_eq!(2, b.banker_total_cards());
-        assert_eq!(Result::Banker(8), b.result2());
+        assert_eq!(Result::Banker(8), b.result());
         let m = payout_map(&b);
         assert_eq!(m, hashmap!{Bets::Banker=>2.0});
     }
@@ -148,7 +148,7 @@ mod tests {
         let cards = vec![card("D7"), card("H9"), card("HQ"), card("H8")];
         let b = Baccarat::from(&cards).unwrap();
         assert_eq!(2, b.banker_total_cards());
-        assert_eq!(Result::Tie(7), b.result2());
+        assert_eq!(Result::Tie(7), b.result());
         let m = payout_map(&b);
         assert_eq!(
             m,
@@ -161,7 +161,7 @@ mod tests {
         let cards = vec![card("D7"), card("H8"), card("SA"), card("CK")];
         let b = Baccarat::from(&cards).unwrap();
         assert_eq!(2, b.banker_total_cards());
-        assert_eq!(Result::Tie(8), b.result2());
+        assert_eq!(Result::Tie(8), b.result());
         let m = payout_map(&b);
         assert_eq!(
             m,
@@ -181,7 +181,7 @@ mod tests {
         ];
         let b = Baccarat::from(&cards).unwrap();
         assert_eq!(3, b.banker_total_cards());
-        assert_eq!(Result::Banker(1), b.result2());
+        assert_eq!(Result::Banker(1), b.result());
         let m = payout_map(&b);
         assert_eq!(m, hashmap!{Bets::Banker=>2.0, Bets::Super7=>7.0});
     }
