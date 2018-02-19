@@ -1,5 +1,5 @@
 use std::collections::{HashMap, HashSet};
-use super::common::Baccarat;
+use super::common::{Baccarat, Result};
 use games::card::Card;
 
 #[derive(Hash, PartialEq, Eq, Debug)]
@@ -45,41 +45,46 @@ impl FabulousBaccarat {
 }
 
 pub fn payout_map(b: &Baccarat) -> HashMap<Bets, f64> {
-    let (tb, tp, is_banker, is_player, is_tie) = b.result();
-    let mut result = HashMap::<Bets, f64>::new();
-
-    if is_tie {
-        result.insert(Bets::Tie, 9.0);
-        result.insert(Bets::Banker, 1.0);
-        result.insert(Bets::Player, 1.0);
-    } else if is_banker {
-        result.insert(Bets::Banker, ratio(tb, 1.0, 3.0, 2.0));
-    } else {
-        result.insert(Bets::Player, ratio(tp, 1.5, 3.0, 2.0));
-    }
-
-    if is_banker && tb == 4 {
-        result.insert(Bets::BankerF4, 21.0);
-    }
-    if is_player && tp == 4 {
-        result.insert(Bets::PlayerF4, 41.0);
-    }
-
+    let mut map = result_payout_map(b.result2());
     if let Some(r) = fabulous_pair(b.banker_first2()) {
-        result.insert(Bets::BankerFPair, r);
+        map.insert(Bets::BankerFPair, r);
     }
     if let Some(r) = fabulous_pair(b.player_first2()) {
-        result.insert(Bets::PlayerFPair, r);
+        map.insert(Bets::PlayerFPair, r);
     }
-    result
+    map
 }
 
-fn ratio(total: u8, f1: f64, f2: f64, f3: f64) -> f64 {
-    match total {
-        4 => f1,
-        1 => f2,
-        _ => f3,
+fn result_payout_map(result: Result) -> HashMap<Bets, f64> {
+    let mut map = HashMap::<Bets, f64>::new();
+    match result {
+        Result::Tie(_) => {
+            map.insert(Bets::Tie, 9.0);
+            map.insert(Bets::Banker, 1.0);
+            map.insert(Bets::Player, 1.0);
+        }
+        Result::Banker(4) => {
+            map.insert(Bets::BankerF4, 21.0);
+            map.insert(Bets::Banker, 1.0);
+        }
+        Result::Banker(1) => {
+            map.insert(Bets::Banker, 3.0);
+        }
+        Result::Banker(_) => {
+            map.insert(Bets::Banker, 2.0);
+        }
+        Result::Player(4) => {
+            map.insert(Bets::PlayerF4, 41.0);
+            map.insert(Bets::Player, 1.5);
+        }
+        Result::Player(1) => {
+            map.insert(Bets::Player, 3.0);
+        }
+        Result::Player(_) => {
+            map.insert(Bets::Player, 2.0);
+        }
     }
+    map
 }
 
 fn fabulous_pair(first2: (Card, Card)) -> Option<f64> {
@@ -96,3 +101,47 @@ fn fabulous_pair(first2: (Card, Card)) -> Option<f64> {
         None
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_result_payout_map() {
+        let r = Result::Tie(1);
+        let m = result_payout_map(r);
+        assert_eq!(
+            m,
+            hashmap!{Bets::Banker=> 1.0, Bets::Player=> 1.0, Bets::Tie=> 9.0}
+        );
+
+        let r = Result::Banker(4);
+        let m = result_payout_map(r);
+        assert_eq!(m,hashmap!{Bets::Banker=> 1.0, Bets::BankerF4=> 21.0});
+
+        let r = Result::Banker(1);
+        let m = result_payout_map(r);
+        assert_eq!(m,hashmap!{Bets::Banker=> 3.0});
+
+        let r = Result::Banker(9);
+        let m = result_payout_map(r);
+        assert_eq!(m,hashmap!{Bets::Banker=> 2.0});
+
+        let r = Result::Player(4);
+        let m = result_payout_map(r);
+        assert_eq!(m,hashmap!{Bets::Player=> 1.5, Bets::PlayerF4=> 41.0});
+
+        let r = Result::Player(1);
+        let m = result_payout_map(r);
+        assert_eq!(m,hashmap!{Bets::Player=> 3.0});
+
+        let r = Result::Player(9);
+        let m = result_payout_map(r);
+        assert_eq!(m,hashmap!{Bets::Player=> 2.0});
+
+        let r = Result::Player(8);
+        let m = result_payout_map(r);
+        assert_eq!(m,hashmap!{Bets::Player=> 2.0});
+    }
+}
+
