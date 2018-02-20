@@ -1,5 +1,6 @@
 use std::collections::{HashMap, HashSet};
 use super::common::{Baccarat, Result};
+use games::BetSerde;
 
 #[derive(Hash, PartialEq, Eq, Debug)]
 pub enum Bets {
@@ -15,6 +16,43 @@ pub enum Bets {
     Super6,
     Big,
     Small,
+}
+
+impl BetSerde for Bets {
+    fn to_u16(&self) -> u16 {
+        match *self {
+            Bets::Banker => 1,
+            Bets::Player => 2,
+            Bets::Tie => 3,
+            Bets::BankerPair => 4,
+            Bets::PlayerPair => 5,
+            Bets::BankerN8 => 6,
+            Bets::BankerN9 => 7,
+            Bets::PlayerN8 => 8,
+            Bets::PlayerN9 => 9,
+            Bets::Super6 => 10,
+            Bets::Big => 11,
+            Bets::Small => 12,
+        }
+    }
+
+    fn from_u16(id: u16) -> Option<Bets> {
+        match id {
+            1 => Some(Bets::Banker),
+            2 => Some(Bets::Player),
+            3 => Some(Bets::Tie),
+            4 => Some(Bets::BankerPair),
+            5 => Some(Bets::PlayerPair),
+            6 => Some(Bets::BankerN8),
+            7 => Some(Bets::BankerN9),
+            8 => Some(Bets::PlayerN8),
+            9 => Some(Bets::PlayerN9),
+            10 => Some(Bets::Super6),
+            11 => Some(Bets::Big),
+            12 => Some(Bets::Small),
+            _ => None,
+        }
+    }
 }
 
 pub struct CommissionBaccarat {

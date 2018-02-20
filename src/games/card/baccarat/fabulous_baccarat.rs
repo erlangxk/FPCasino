@@ -1,6 +1,7 @@
 use std::collections::{HashMap, HashSet};
 use super::common::{Baccarat, Result};
 use games::card::Card;
+use games::BetSerde;
 
 #[derive(Hash, PartialEq, Eq, Debug)]
 pub enum Bets {
@@ -13,13 +14,39 @@ pub enum Bets {
     PlayerF4,
 }
 
+impl BetSerde for Bets {
+    fn to_u16(&self) -> u16 {
+        match *self {
+            Bets::Banker => 1,
+            Bets::Player => 2,
+            Bets::Tie => 3,
+            Bets::BankerFPair => 4,
+            Bets::PlayerFPair => 5,
+            Bets::BankerF4 => 6,
+            Bets::PlayerF4 => 7,
+        }
+    }
+    
+    fn from_u16(id: u16) -> Option<Bets> {
+        match id {
+            1 => Some(Bets::Banker),
+            2 => Some(Bets::Player),
+            3 => Some(Bets::Tie),
+            4 => Some(Bets::BankerFPair),
+            5 => Some(Bets::PlayerFPair),
+            6 => Some(Bets::BankerF4),
+            7 => Some(Bets::PlayerF4),
+            _ => None,
+        }
+    }
+}
+
 pub fn all_bets() -> HashSet<Bets> {
-    hashset!{ Bets::Banker,Bets::Player,Bets::Tie,Bets::BankerF4, Bets::PlayerF4,
-    Bets::BankerFPair,Bets::PlayerFPair}
+    hashset!{ Bets::Banker, Bets::Player, Bets::Tie, Bets::BankerF4, Bets::PlayerF4, Bets::BankerFPair, Bets::PlayerFPair}
 }
 
 pub fn bets_after70() -> HashSet<Bets> {
-    hashset!{ Bets::Banker,Bets::Player,Bets::Tie,Bets::BankerF4, Bets::PlayerF4}
+    hashset!{ Bets::Banker, Bets::Player, Bets::Tie, Bets::BankerF4, Bets::PlayerF4}
 }
 
 struct FabulousBaccarat {

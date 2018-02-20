@@ -7,3 +7,5 @@ extern crate lazy_static;
 
 pub mod games;
 pub mod web;
+pub mod tables;
+pub mod integration;

@@ -1,6 +1,7 @@
 use std::collections::{HashMap, HashSet};
 use super::common::{Baccarat, Result};
 use games::card::{Card, Rank};
+use games::BetSerde;
 
 #[derive(Hash, PartialEq, Eq, Debug)]
 pub enum Bets {
@@ -23,6 +24,57 @@ pub enum Bets {
     TieOn0123,
     TieOn456,
     TieOn789,
+}
+
+impl BetSerde for Bets {
+    fn to_u16(&self) -> u16 {
+        match *self {
+            Bets::Banker => 1,
+            Bets::Player => 2,
+            Bets::Tie => 3,
+            Bets::BankerBlack => 4,
+            Bets::BankerRed => 5,
+            Bets::BankerLuckyPair => 6,
+            Bets::PlayerBlack => 7,
+            Bets::PlayerRed => 8,
+            Bets::PlayerLuckyPair => 9,
+            Bets::Lucky6 => 10,
+            Bets::BankerWinsOn123 => 11,
+            Bets::BankerWinsOn456 => 12,
+            Bets::BankerWinsOn789 => 13,
+            Bets::PlayerWinsOn123 => 14,
+            Bets::PlayerWinsOn456 => 15,
+            Bets::PlayerWinsOn789 => 16,
+            Bets::TieOn0123 => 17,
+            Bets::TieOn456 => 18,
+            Bets::TieOn789 => 19,
+        }
+    }
+    
+    fn from_u16(id: u16) -> Option<Bets> {
+        match id {
+            1 => Some(Bets::Banker),
+            2 => Some(Bets::Player),
+            3 => Some(Bets::Tie),
+            4 => Some(Bets::BankerBlack),
+            5 => Some(Bets::BankerRed),
+            6 => Some(Bets::BankerLuckyPair),
+            7 => Some(Bets::PlayerBlack),
+            8 => Some(Bets::PlayerRed),
+            9 => Some(Bets::PlayerLuckyPair),
+            10 => Some(Bets::Lucky6),
+            11 => Some(Bets::BankerWinsOn123),
+            12 => Some(Bets::BankerWinsOn456),
+            13 => Some(Bets::BankerWinsOn456),
+            14 => Some(Bets::PlayerWinsOn123),
+            15 => Some(Bets::PlayerWinsOn456),
+            16 => Some(Bets::PlayerWinsOn789),
+            17 => Some(Bets::TieOn0123),
+            18 => Some(Bets::TieOn456),
+            19 => Some(Bets::TieOn789),
+            _ => None,
+        }
+    }
 }
 
 pub fn all_bets() -> HashSet<Bets> {
@@ -360,5 +412,4 @@ mod tests {
         let r = result_payout_map(Result::Player(9));
         assert_eq!(r, hashmap!{Bets::PlayerWinsOn789 => 3.0, Bets::Player => 2.0});
     }
-
 }

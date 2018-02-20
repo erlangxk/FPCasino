@@ -1,5 +1,6 @@
 use std::collections::{HashMap, HashSet};
 use super::common::{Baccarat, Result};
+use games::BetSerde;
 
 #[derive(Hash, PartialEq, Eq, Debug)]
 pub enum Bets {
@@ -7,6 +8,27 @@ pub enum Bets {
     Player,
     Tie,
     Super7,
+}
+
+impl BetSerde for Bets {
+    fn to_u16(&self) -> u16 {
+        match *self {
+            Bets::Banker => 1,
+            Bets::Player => 2,
+            Bets::Tie => 3,
+            Bets::Super7 => 4,
+        }
+    }
+    
+    fn from_u16(id: u16) -> Option<Bets> {
+        match id {
+            1 => Some(Bets::Banker),
+            2 => Some(Bets::Player),
+            3 => Some(Bets::Tie),
+            4 => Some(Bets::Super7),
+            _ => None,
+        }
+    }
 }
 
 pub fn all_bets() -> HashSet<Bets> {
