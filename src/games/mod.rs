@@ -14,9 +14,9 @@ pub trait Game {
     
     fn from_raw_bets(&self, bets: &HashMap<u16, f64>) -> Option<HashMap<Self::B, f64>> {
         let mut m = HashMap::<Self::B, f64>::new();
-        for (k, v) in bets {
-            if let Some(b) = Self::B::from_u16(*k) {
-                m.insert(b, *v);
+        for (&k, &v) in bets {
+            if let Some(b) = Self::B::from_u16(k) {
+                m.insert(b, v);
             } else {
                 return None;
             }
