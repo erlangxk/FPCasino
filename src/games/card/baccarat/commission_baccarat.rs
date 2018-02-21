@@ -1,6 +1,6 @@
 use std::collections::{HashMap, HashSet};
 use super::common::{Baccarat, Result};
-use games::BetSerde;
+use games::{BetSerde, Game};
 
 #[derive(Hash, PartialEq, Eq, Debug)]
 pub enum Bets {
@@ -160,6 +160,10 @@ impl CommissionBaccarat {
             &self.bets_after70
         }
     }
+}
+
+impl Game for CommissionBaccarat {
+    type B = Bets;
 }
 
 #[cfg(test)]
