@@ -10,33 +10,35 @@ pub enum Bets {
     Super7,
 }
 
+use self::Bets::*;
+
 impl BetSerde for Bets {
     fn to_u16(&self) -> u16 {
         match *self {
-            Bets::Banker => 1,
-            Bets::Player => 2,
-            Bets::Tie => 3,
-            Bets::Super7 => 4,
+            Banker => 1,
+            Player => 2,
+            Tie => 3,
+            Super7 => 4,
         }
     }
     
     fn from_u16(id: u16) -> Option<Bets> {
         match id {
-            1 => Some(Bets::Banker),
-            2 => Some(Bets::Player),
-            3 => Some(Bets::Tie),
-            4 => Some(Bets::Super7),
+            1 => Some(Banker),
+            2 => Some(Player),
+            3 => Some(Tie),
+            4 => Some(Super7),
             _ => None,
         }
     }
 }
 
 pub fn all_bets() -> HashSet<Bets> {
-    hashset!{ Bets::Banker,Bets::Player,Bets::Tie,Bets::Super7}
+    hashset!{ Banker,Player,Tie,Super7}
 }
 
 pub fn bets_after40() -> HashSet<Bets> {
-    hashset!{ Bets::Banker,Bets::Player,Bets::Tie}
+    hashset!{ Banker,Player,Tie}
 }
 
 struct SevenupBaccarat {
@@ -64,7 +66,7 @@ impl SevenupBaccarat {
 pub fn payout_map(b: &Baccarat) -> HashMap<Bets, f64> {
     let mut map = result_payout_map(b.result());
     if let Some(r) = ratio7(b.count_cards(7)) {
-        map.insert(Bets::Super7, r);
+        map.insert(Super7, r);
     }
     map
 }
@@ -73,27 +75,27 @@ fn result_payout_map(result: Result) -> HashMap<Bets, f64> {
     let mut map = HashMap::<Bets, f64>::new();
     match result {
         Result::Tie(7) => {
-            map.insert(Bets::Tie, 10.0);
+            map.insert(Tie, 10.0);
         }
         Result::Tie(_) => {
-            map.insert(Bets::Tie, 8.0);
+            map.insert(Tie, 8.0);
         }
         Result::Banker(7) => {
-            map.insert(Bets::Banker, 2.5);
+            map.insert(Banker, 2.5);
         }
         Result::Banker(_) => {
-            map.insert(Bets::Banker, 2.0);
+            map.insert(Banker, 2.0);
         }
         Result::Player(7) => {
-            map.insert(Bets::Player, 1.5);
+            map.insert(Player, 1.5);
         }
         Result::Player(_) => {
-            map.insert(Bets::Player, 2.0);
+            map.insert(Player, 2.0);
         }
     }
     if let Result::Tie(_) = result {
-        map.insert(Bets::Banker, 1.0);
-        map.insert(Bets::Player, 1.0);
+        map.insert(Banker, 1.0);
+        map.insert(Player, 1.0);
     }
     map
 }
@@ -114,6 +116,8 @@ mod tests {
     use super::*;
     use games::card::serde::str_to_card;
     use games::card::Card;
+    use super::Bets::*;
+    
     fn card(s: &str) -> Card {
         str_to_card(s).unwrap()
     }
@@ -125,7 +129,7 @@ mod tests {
         assert_eq!(3, b.banker_total_cards());
         assert_eq!(Result::Player(7), b.result());
         let m = payout_map(&b);
-        assert_eq!(m, hashmap!{Bets::Player=>1.5});
+        assert_eq!(m, hashmap!{Player=>1.5});
     }
 
     #[test]
@@ -135,7 +139,7 @@ mod tests {
         assert_eq!(2, b.banker_total_cards());
         assert_eq!(Result::Player(8), b.result());
         let m = payout_map(&b);
-        assert_eq!(m, hashmap!{Bets::Player=>2.0});
+        assert_eq!(m, hashmap!{Player=>2.0});
     }
 
     #[test]
@@ -152,7 +156,7 @@ mod tests {
         assert_eq!(3, b.banker_total_cards());
         assert_eq!(Result::Banker(7), b.result());
         let m = payout_map(&b);
-        assert_eq!(m, hashmap!{Bets::Banker=>2.5, Bets::Super7=>2.5});
+        assert_eq!(m, hashmap!{Banker=>2.5, Super7=>2.5});
     }
 
     #[test]
@@ -162,7 +166,7 @@ mod tests {
         assert_eq!(2, b.banker_total_cards());
         assert_eq!(Result::Banker(8), b.result());
         let m = payout_map(&b);
-        assert_eq!(m, hashmap!{Bets::Banker=>2.0});
+        assert_eq!(m, hashmap!{Banker=>2.0});
     }
 
     #[test]
@@ -174,7 +178,7 @@ mod tests {
         let m = payout_map(&b);
         assert_eq!(
             m,
-            hashmap!{Bets::Banker=>1.0, Bets::Player=>1.0, Bets::Tie=>10.0}
+            hashmap!{Banker=>1.0, Player=>1.0, Tie=>10.0}
         );
     }
 
@@ -187,7 +191,7 @@ mod tests {
         let m = payout_map(&b);
         assert_eq!(
             m,
-            hashmap!{Bets::Banker=>1.0, Bets::Player=>1.0, Bets::Tie=>8.0}
+            hashmap!{Banker=>1.0, Player=>1.0, Tie=>8.0}
         );
     }
 
@@ -205,7 +209,7 @@ mod tests {
         assert_eq!(3, b.banker_total_cards());
         assert_eq!(Result::Banker(1), b.result());
         let m = payout_map(&b);
-        assert_eq!(m, hashmap!{Bets::Banker=>2.0, Bets::Super7=>7.0});
+        assert_eq!(m, hashmap!{Banker=>2.0, Super7=>7.0});
     }
 
     #[test]
@@ -224,11 +228,11 @@ mod tests {
         let s1 = b.valid_bets(40);
         assert_eq!(4, s1.len());
         assert_eq!(
-            hashset!{Bets::Banker,Bets::Player,Bets::Tie,Bets::Super7},
+            hashset!{Banker,Player,Tie,Super7},
             *s1
         );
         let s1 = b.valid_bets(41);
         assert_eq!(3, s1.len());
-        assert_eq!(hashset!{Bets::Banker,Bets::Player,Bets::Tie}, *s1);
+        assert_eq!(hashset!{Banker,Player,Tie}, *s1);
     }
 }
