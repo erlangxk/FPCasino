@@ -1,8 +1,8 @@
 use std::collections::HashMap;
 use super::{add, BetKind};
-use games::dice::{Ratio,BetId};
+use games::dice::{BetId, Ratio};
 
-#[derive(Clone,Copy)]
+#[derive(Clone, Copy)]
 struct Straight(u16, u8);
 
 impl BetKind for Straight {
