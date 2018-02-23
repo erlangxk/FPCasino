@@ -1,6 +1,7 @@
 pub mod single;
 pub mod double;
 pub mod triple;
+pub mod total;
 pub mod pair;
 pub mod simple;
 pub mod all;

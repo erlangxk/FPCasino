@@ -21,7 +21,7 @@ impl Sicbo {
         self.all_bets.contains_key(&bet_id)
     }
 
-    fn payout_map(&self, d1: u8, d2: u8, d3: u8) -> HashMap<u16, f64> {
+    pub fn payout_map(&self, d1: u8, d2: u8, d3: u8) -> HashMap<u16, f64> {
         let r = Result::new(d1, d2, d3);
         let mut map = HashMap::<u16, f64>::new();
         for (&id, b) in &self.all_bets {
@@ -31,5 +31,18 @@ impl Sicbo {
             }
         }
         map
+    }
+}
+
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_payout_map() {
+        let s = Sicbo::new();
+        let r = s.payout_map(1, 1, 1);
+        assert_eq!(r, hashmap!(37=>25.0,31=>151.0,11=>4.0,21=>9.0));
     }
 }
