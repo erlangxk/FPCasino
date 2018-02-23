@@ -25,6 +25,7 @@ struct PlayerBet<T:Hash>{
 };
 
 struct Table<Bets, Game> {
+    id: u16,
     game: Game,
     round: Option<Round>,
     current_bets:Vec<PlayerBet<Self::Bets>>,
