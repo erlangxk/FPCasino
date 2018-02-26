@@ -70,7 +70,7 @@ pub fn all_bets(map: &mut HashMap<u16, Box<BetKind>>){
     add(Box::new(Split(243, 11, 12)), map);
     add(Box::new(Split(244, 13, 14)), map);
     add(Box::new(Split(245, 14, 15)), map);
-    add(Box::new(Split(246, 17, 17)), map);
+    add(Box::new(Split(246, 16, 17)), map);
     add(Box::new(Split(247, 17, 18)), map);
     add(Box::new(Split(248, 19, 20)), map);
     add(Box::new(Split(249, 20, 21)), map);
