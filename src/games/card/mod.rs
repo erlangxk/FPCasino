@@ -1,4 +1,6 @@
 pub mod baccarat;
+pub mod dragontiger;
+
 pub mod serde;
 
 #[derive(Clone, Copy, PartialEq, Eq, Debug, Hash)]
