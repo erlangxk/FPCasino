@@ -47,3 +47,42 @@ pub fn all_bets(map: &mut HashMap<u16, Box<BetKind>>) {
     add(Box::new(Simple::Odd), map);
     add(Box::new(Simple::Even), map);
 }
+
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_bingo() {
+        let r = Result::new(1, 1, 1);
+        assert_eq!(Simple::Big.bingo(&r), 0);
+        assert_eq!(Simple::Small.bingo(&r), 0);
+        assert_eq!(Simple::Odd.bingo(&r), 0);
+        assert_eq!(Simple::Even.bingo(&r), 0);
+
+        let r = Result::new(1, 1, 2);
+        assert_eq!(Simple::Big.bingo(&r), 0);
+        assert_eq!(Simple::Small.bingo(&r), 1);
+        assert_eq!(Simple::Odd.bingo(&r), 0);
+        assert_eq!(Simple::Even.bingo(&r), 1);
+
+        let r = Result::new(1, 1, 3);
+        assert_eq!(Simple::Big.bingo(&r), 0);
+        assert_eq!(Simple::Small.bingo(&r), 1);
+        assert_eq!(Simple::Odd.bingo(&r), 1);
+        assert_eq!(Simple::Even.bingo(&r), 0);
+
+        let r = Result::new(4, 5, 6);
+        assert_eq!(Simple::Big.bingo(&r), 1);
+        assert_eq!(Simple::Small.bingo(&r), 0);
+        assert_eq!(Simple::Odd.bingo(&r), 1);
+        assert_eq!(Simple::Even.bingo(&r), 0);
+
+        let r = Result::new(4, 4, 6);
+        assert_eq!(Simple::Big.bingo(&r), 1);
+        assert_eq!(Simple::Small.bingo(&r), 0);
+        assert_eq!(Simple::Odd.bingo(&r), 0);
+        assert_eq!(Simple::Even.bingo(&r), 1);
+    }
+}

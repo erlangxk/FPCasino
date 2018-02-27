@@ -12,15 +12,19 @@ impl BetId for Total {
 
 impl Ratio for Total {
     fn ratio(&self) -> f64 {
-        match self.1 {
-            4 | 17 => 50.0,
-            5 | 16 => 18.0,
-            6 | 15 => 14.0,
-            7 | 14 => 12.0,
-            8 | 13 => 8.0,
-            9 | 10 | 11 | 12 => 6.0,
-            _ => unreachable!(),
-        }
+        ratio_impl(self.1)
+    }
+}
+
+fn ratio_impl(n: u8) -> f64 {
+    match n {
+        4 | 17 => 50.0,
+        5 | 16 => 18.0,
+        6 | 15 => 14.0,
+        7 | 14 => 12.0,
+        8 | 13 => 8.0,
+        9 | 10 | 11 | 12 => 6.0,
+        _ => unreachable!(),
     }
 }
 
@@ -45,4 +49,29 @@ pub fn all_bets(map: &mut HashMap<u16, Box<BetKind>>) {
     add(Box::new(Total(115, 15)), map);
     add(Box::new(Total(116, 16)), map);
     add(Box::new(Total(117, 17)), map);
+}
+
+
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_ratio() {
+        assert_eq!(ratio_impl(4),50.0);
+        assert_eq!(ratio_impl(5),18.0);
+        assert_eq!(ratio_impl(6),14.0);
+        assert_eq!(ratio_impl(7),12.0);
+        assert_eq!(ratio_impl(8),8.0);
+        assert_eq!(ratio_impl(9),6.0);
+        assert_eq!(ratio_impl(10),6.0);
+        assert_eq!(ratio_impl(11),6.0);
+        assert_eq!(ratio_impl(12),6.0);
+        assert_eq!(ratio_impl(13),8.0);
+        assert_eq!(ratio_impl(14),12.0);
+        assert_eq!(ratio_impl(15),14.0);
+        assert_eq!(ratio_impl(16),18.0);
+        assert_eq!(ratio_impl(17),50.0);
+    }
 }

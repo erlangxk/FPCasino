@@ -30,3 +30,47 @@ pub fn all_bets(map: &mut HashMap<u16, Box<BetKind>>) {
     add(Box::new(Single(15, 5)), map);
     add(Box::new(Single(16, 6)), map);
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_bingo() {
+        let r = Result::new(1, 1, 1);
+        assert_eq!(Single(11,1).bingo(&r), 3);
+        
+        let r = Result::new(1, 1, 2);
+        assert_eq!(Single(11,1).bingo(&r), 2);
+        assert_eq!(Single(12,2).bingo(&r), 1);
+        
+        let r = Result::new(1, 2, 3);
+        assert_eq!(Single(11,1).bingo(&r), 1);
+        assert_eq!(Single(12,2).bingo(&r), 1);
+        assert_eq!(Single(13,3).bingo(&r), 1);
+        
+        let r = Result::new(4, 5, 6);
+        assert_eq!(Single(14,4).bingo(&r), 1);
+        assert_eq!(Single(15,5).bingo(&r), 1);
+        assert_eq!(Single(16,6).bingo(&r), 1);
+    }
+
+    #[test]
+    fn test_all_bets() {
+        
+        let mut m= HashMap::<u16, Box<BetKind>>::new();
+        all_bets(&mut m);
+
+        let r = Result::new(1, 1, 1);
+        let r1:Vec<_> =m.iter().filter(|&(id,bet)|bet.bingo(&r)>0).collect();
+        assert_eq!(r1.len(), 1);
+
+        let r = Result::new(1, 1, 2);
+        let r1:Vec<_> =m.iter().filter(|&(id,bet)|bet.bingo(&r)>0).collect();
+        assert_eq!(r1.len(), 2);
+
+        let r = Result::new(1, 2, 3);
+        let r1:Vec<_> =m.iter().filter(|&(id,bet)|bet.bingo(&r)>0).collect();
+        assert_eq!(r1.len(), 3);
+    }
+}
