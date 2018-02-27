@@ -40,9 +40,39 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_payout_map() {
-        let s = Sicbo::new();
-        let r = s.payout_map(1, 1, 1);
+    fn test_payout_map1() {
+        let r = Sicbo::new().payout_map(1, 1, 1);
         assert_eq!(r, hashmap!(37=>25.0,31=>151.0,11=>4.0,21=>9.0));
     }
+
+    #[test]
+    fn test_payout_map2() {
+        let r = Sicbo::new().payout_map(1, 1, 2);
+        assert_eq!(r, hashmap!(11=>3.0, 12=>2.0, 21=>9.0, 2=>2.0, 4=>2.0, 104=>51.0, 212=>6.0));
+    }
+
+    #[test]
+    fn test_payout_map3() {
+        let r = Sicbo::new().payout_map(1, 2, 6);
+        assert_eq!(r, hashmap!(11=>2.0, 12=>2.0, 16=>2.0, 2=>2.0, 3=>2.0, 109=>7.0, 212=>6.0, 216=>6.0, 226=>6.0));
+    }
+
+    #[test]
+    fn test_payout_map4() {
+        let r = Sicbo::new().payout_map(6, 6, 6);
+        assert_eq!(r, hashmap!(16=>4.0, 26=>9.0, 37=>25.0, 36=>151.0));
+    }
+
+    #[test]
+    fn test_payout_map5() {
+        let r = Sicbo::new().payout_map(4, 5, 2);
+        assert_eq!(r, hashmap!(12=>2.0, 14=>2.0, 15=>2.0, 1=>2.0, 3=>2.0, 111=>7.0, 224=>6.0, 225=>6.0, 245=>6.0 ));
+    }
+
+    #[test]
+    fn test_payout_map6() {
+        let r = Sicbo::new().payout_map(6, 5, 6);
+        assert_eq!(r, hashmap!(15=>2.0, 16=>3.0, 26=>9.0, 1=>2.0, 3=>2.0, 117=>51.0, 256=>6.0 ));
+    }
+
 }
