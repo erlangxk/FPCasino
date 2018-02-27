@@ -28,7 +28,7 @@ impl BetKind for Double {
 pub fn all_bets(map: &mut HashMap<u16, Box<BetKind>>) {
     add(Box::new(Double(21, 1)), map);
     add(Box::new(Double(22, 2)), map);
-    add(Box::new(Double(33, 3)), map);
+    add(Box::new(Double(23, 3)), map);
     add(Box::new(Double(24, 4)), map);
     add(Box::new(Double(25, 5)), map);
     add(Box::new(Double(26, 6)), map);

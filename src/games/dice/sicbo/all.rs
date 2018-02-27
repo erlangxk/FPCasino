@@ -43,6 +43,21 @@ mod tests {
     fn test_payout_map1() {
         let r = Sicbo::new().payout_map(1, 1, 1);
         assert_eq!(r, hashmap!(37=>25.0,31=>151.0,11=>4.0,21=>9.0));
+
+        let r = Sicbo::new().payout_map(2, 2, 2);
+        assert_eq!(r, hashmap!(37=>25.0,32=>151.0,12=>4.0,22=>9.0,106=>15.0));
+
+        let r = Sicbo::new().payout_map(3, 3, 3);
+        assert_eq!(r, hashmap!(37=>25.0,33=>151.0,13=>4.0,23=>9.0,109=>7.0));
+
+        let r = Sicbo::new().payout_map(4, 4, 4);
+        assert_eq!(r, hashmap!(37=>25.0,34=>151.0,14=>4.0,24=>9.0,112=>7.0));
+
+        let r = Sicbo::new().payout_map(5, 5, 5);
+        assert_eq!(r, hashmap!(37=>25.0,35=>151.0,15=>4.0,25=>9.0,115=>15.0));
+
+        let r = Sicbo::new().payout_map(6, 6, 6);
+        assert_eq!(r, hashmap!(37=>25.0,36=>151.0,16=>4.0,26=>9.0));
     }
 
     #[test]
@@ -74,5 +89,39 @@ mod tests {
         let r = Sicbo::new().payout_map(6, 5, 6);
         assert_eq!(r, hashmap!(15=>2.0, 16=>3.0, 26=>9.0, 1=>2.0, 3=>2.0, 117=>51.0, 256=>6.0 ));
     }
+
+    #[test]
+    fn test_payout_map7() {
+        let r = Sicbo::new().payout_map(1, 2, 3);
+        assert_eq!(r, hashmap!(11=>2.0, 12=>2.0, 13=>2.0, 212=>6.0, 213=>6.0, 223=>6.0, 106=>15.0, 2=>2.0, 4=>2.0));
+    
+        let r = Sicbo::new().payout_map(1, 3, 4);
+        assert_eq!(r, hashmap!(11=>2.0, 14=>2.0, 13=>2.0, 213=>6.0, 214=>6.0, 234=>6.0, 108=>9.0, 2=>2.0, 4=>2.0));
+
+        let r = Sicbo::new().payout_map(1, 4, 5);
+        assert_eq!(r, hashmap!(11=>2.0, 14=>2.0, 15=>2.0, 214=>6.0, 215=>6.0, 245=>6.0, 110=>7.0, 2=>2.0, 4=>2.0));
+
+        let r = Sicbo::new().payout_map(1, 5, 6);
+        assert_eq!(r, hashmap!(11=>2.0, 16=>2.0, 15=>2.0, 215=>6.0, 216=>6.0, 256=>6.0, 112=>7.0, 1=>2.0, 4=>2.0));
+
+        let r = Sicbo::new().payout_map(2, 3, 4);
+        assert_eq!(r, hashmap!(12=>2.0, 13=>2.0, 14=>2.0, 223=>6.0, 224=>6.0, 234=>6.0, 109=>7.0, 2=>2.0, 3=>2.0));
+
+        let r = Sicbo::new().payout_map(2, 5, 6);
+        assert_eq!(r, hashmap!(12=>2.0, 15=>2.0, 16=>2.0, 225=>6.0, 226=>6.0, 256=>6.0, 113=>9.0, 1=>2.0, 3=>2.0));
+
+        let r = Sicbo::new().payout_map(3, 4, 5);
+        assert_eq!(r, hashmap!(13=>2.0, 14=>2.0, 15=>2.0, 234=>6.0, 235=>6.0, 245=>6.0, 112=>7.0, 1=>2.0, 4=>2.0));
+
+        let r = Sicbo::new().payout_map(3, 5, 6);
+        assert_eq!(r, hashmap!(13=>2.0, 16=>2.0, 15=>2.0, 235=>6.0, 236=>6.0, 256=>6.0, 114=>13.0, 1=>2.0, 4=>2.0));
+
+        let r = Sicbo::new().payout_map(4, 5, 6);
+        assert_eq!(r, hashmap!(14=>2.0, 16=>2.0, 15=>2.0, 245=>6.0, 246=>6.0, 256=>6.0, 115=>15.0, 1=>2.0, 3=>2.0));
+
+        let r = Sicbo::new().payout_map(5, 5, 6);
+        assert_eq!(r, hashmap!(16=>2.0, 15=>3.0, 256=>6.0, 116=>19.0, 1=>2.0, 4=>2.0, 25=>9.0));
+    }
+
 
 }

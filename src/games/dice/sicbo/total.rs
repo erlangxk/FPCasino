@@ -16,6 +16,7 @@ impl Ratio for Total {
     }
 }
 
+#[inline]
 fn ratio_impl(n: u8) -> f64 {
     match n {
         4 | 17 => 50.0,
