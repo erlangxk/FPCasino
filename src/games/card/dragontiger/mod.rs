@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 use super::{Card, Rank};
 
-pub fn value_of_card(card: &Card) -> u8 {
+fn value_of_card(card: &Card) -> u8 {
     match card.rank {
         Rank::Ace => 1,
         Rank::Two => 2,
@@ -90,23 +90,19 @@ pub fn payout_map(b: &DragonTiger) -> HashMap<Bets, f64> {
             map.insert(Bets::Tiger, 1.0);
         }
     }
-    match parity(d) {
+   add_odd_even(d, Bets::DragonOdd,Bets::DragonEven,&mut map);
+   add_odd_even(t, Bets::TigerOdd,Bets::TigerEven,&mut map);
+   map
+}
+
+fn add_odd_even(n:u8, odd:Bets, even:Bets, map:&mut HashMap<Bets, f64>){
+    match parity(n) {
         Parity::Odd => {
-            map.insert(Bets::DragonOdd, 2.0);
+            map.insert(odd, 2.0);
         }
         Parity::Even => {
-            map.insert(Bets::DragonEven, 2.0);
+            map.insert(even, 2.0);
         }
         Parity::None => {}
     }
-    match parity(t) {
-        Parity::Odd => {
-            map.insert(Bets::TigerOdd, 2.0);
-        }
-        Parity::Even => {
-            map.insert(Bets::TigerEven, 2.0);
-        }
-        Parity::None => {}
-    }
-    map
 }
