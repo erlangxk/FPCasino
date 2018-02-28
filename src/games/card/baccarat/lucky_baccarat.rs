@@ -80,7 +80,8 @@ impl BetSerde for Bets {
     }
 }
 
-pub fn all_bets() -> HashSet<Bets> {
+#[inline]
+fn all_bets() -> HashSet<Bets> {
     hashset!{
         Banker,Player,Tie,
         BankerBlack, BankerRed, BankerLuckyPair,
@@ -92,7 +93,8 @@ pub fn all_bets() -> HashSet<Bets> {
     }
 }
 
-pub fn bets_after40() -> HashSet<Bets> {
+#[inline]
+fn bets_after40() -> HashSet<Bets> {
     hashset!{
         Banker,Player,Tie,
         BankerBlack, BankerRed, BankerLuckyPair,
@@ -100,19 +102,20 @@ pub fn bets_after40() -> HashSet<Bets> {
     }
 }
 
-pub fn bets_after60() -> HashSet<Bets> {
+#[inline]
+fn bets_after60() -> HashSet<Bets> {
     hashset!{ Banker,Player,Tie }
 }
 
-struct LuckyBaccarat {
+struct LuckyBaccaratGame {
     all_bets: HashSet<Bets>,
     bets_after40: HashSet<Bets>,
     bets_after60: HashSet<Bets>,
 }
 
-impl LuckyBaccarat {
-    pub fn new() -> LuckyBaccarat {
-        LuckyBaccarat {
+impl LuckyBaccaratGame {
+    pub fn new() -> LuckyBaccaratGame {
+        LuckyBaccaratGame {
             all_bets: all_bets(),
             bets_after40: bets_after40(),
             bets_after60: bets_after60(),
@@ -290,7 +293,7 @@ mod tests {
 
     #[test]
     fn test_valid_bets() {
-        let b = LuckyBaccarat::new();
+        let b = LuckyBaccaratGame::new();
 
         let all = b.valid_bets(40);
         assert_eq!(19, all.len());

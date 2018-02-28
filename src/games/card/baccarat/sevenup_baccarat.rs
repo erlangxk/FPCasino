@@ -33,28 +33,20 @@ impl BetSerde for Bets {
     }
 }
 
-pub fn all_bets() -> HashSet<Bets> {
-    hashset!{ Banker,Player,Tie,Super7}
-}
-
-pub fn bets_after40() -> HashSet<Bets> {
-    hashset!{ Banker,Player,Tie}
-}
-
-struct SevenupBaccarat {
+struct SevenupBaccaratGame {
     all_bets: HashSet<Bets>,
     bets_after40: HashSet<Bets>,
 }
 
-impl SevenupBaccarat {
-    pub fn new() -> SevenupBaccarat {
-        SevenupBaccarat {
-            all_bets: all_bets(),
-            bets_after40: bets_after40(),
+impl SevenupBaccaratGame {
+    pub fn new() -> SevenupBaccaratGame {
+        SevenupBaccaratGame {
+            all_bets:  hashset!{ Banker,Player,Tie,Super7},
+            bets_after40:  hashset!{ Banker,Player,Tie},
         }
     }
 
-    pub fn valid_bets(&self, hands: usize) -> &HashSet<Bets> {
+    fn valid_bets(&self, hands: usize) -> &HashSet<Bets> {
         if hands <= 40 {
             &self.all_bets
         } else {
@@ -224,7 +216,7 @@ mod tests {
 
     #[test]
     fn test_valid_bets() {
-        let b = SevenupBaccarat::new();
+        let b = SevenupBaccaratGame::new();
         let s1 = b.valid_bets(40);
         assert_eq!(4, s1.len());
         assert_eq!(

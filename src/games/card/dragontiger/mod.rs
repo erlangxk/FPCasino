@@ -1,5 +1,40 @@
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 use super::{Card, Rank};
+
+#[derive(Hash, PartialEq, Eq, Debug)]
+pub enum Bets {
+    Dragon,
+    Tiger,
+    Tie,
+    DragonOdd,
+    DragonEven,
+    TigerOdd,
+    TigerEven,
+}
+
+use self::Bets::*;
+
+pub struct DragonTigerGame {
+    all_bets: HashSet<Bets>,
+    bets_after60: HashSet<Bets>,
+}
+
+impl DragonTigerGame {
+    fn valid_bets(&self, hands: u8) -> &HashSet<Bets> {
+        if hands <= 60 {
+            &self.all_bets
+        } else {
+            &self.bets_after60
+        }
+    }
+
+    pub fn new() -> DragonTigerGame {
+        DragonTigerGame {
+            all_bets: hashset!{Dragon,Tiger,Tie, DragonEven, DragonOdd, TigerOdd, TigerEven},
+            bets_after60: hashset!{Dragon,Tiger,Tie},
+        }
+    }
+}
 
 fn value_of_card(card: &Card) -> u8 {
     match card.rank {
@@ -19,17 +54,6 @@ fn value_of_card(card: &Card) -> u8 {
     }
 }
 
-#[derive(Hash, PartialEq, Eq, Debug)]
-pub enum Bets {
-    Dragon,
-    Tiger,
-    Tie,
-    DragonOdd,
-    DragonEven,
-    TigerOdd,
-    TigerEven,
-}
-
 #[derive(Debug)]
 pub struct DragonTiger {
     dragon_card: Card,
@@ -40,13 +64,14 @@ impl DragonTiger {
     fn result(&self) -> (Result, u8, u8) {
         let d = value_of_card(&self.dragon_card);
         let t = value_of_card(&self.tiger_card);
-        if d > t {
-            (Result::Dragon, d, t)
+        let r = if d > t {
+            Result::Dragon
         } else if d < t {
-            (Result::Tiger, d, t)
+            Result::Tiger
         } else {
-            (Result::Tie, d, t)
-        }
+            Result::Tie
+        };
+        (r, d, t)
     }
 }
 
@@ -90,12 +115,12 @@ pub fn payout_map(b: &DragonTiger) -> HashMap<Bets, f64> {
             map.insert(Bets::Tiger, 1.0);
         }
     }
-   add_odd_even(d, Bets::DragonOdd,Bets::DragonEven,&mut map);
-   add_odd_even(t, Bets::TigerOdd,Bets::TigerEven,&mut map);
-   map
+    add_odd_even(d, Bets::DragonOdd, Bets::DragonEven, &mut map);
+    add_odd_even(t, Bets::TigerOdd, Bets::TigerEven, &mut map);
+    map
 }
 
-fn add_odd_even(n:u8, odd:Bets, even:Bets, map:&mut HashMap<Bets, f64>){
+fn add_odd_even(n: u8, odd: Bets, even: Bets, map: &mut HashMap<Bets, f64>) {
     match parity(n) {
         Parity::Odd => {
             map.insert(odd, 2.0);

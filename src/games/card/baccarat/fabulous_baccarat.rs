@@ -43,28 +43,20 @@ impl BetSerde for Bets {
     }
 }
 
-pub fn all_bets() -> HashSet<Bets> {
-    hashset!{ Banker, Player, Tie, BankerF4, PlayerF4, BankerFPair, PlayerFPair}
-}
-
-pub fn bets_after70() -> HashSet<Bets> {
-    hashset!{ Banker, Player, Tie, BankerF4, PlayerF4}
-}
-
-struct FabulousBaccarat {
+struct FabulousBaccaratGame {
     all_bets: HashSet<Bets>,
     bets_after70: HashSet<Bets>,
 }
 
-impl FabulousBaccarat {
-    pub fn new() -> FabulousBaccarat {
-        FabulousBaccarat {
-            all_bets: all_bets(),
-            bets_after70: bets_after70(),
+impl FabulousBaccaratGame {
+    pub fn new() -> FabulousBaccaratGame {
+        FabulousBaccaratGame {
+            all_bets: hashset!{ Banker, Player, Tie, BankerF4, PlayerF4, BankerFPair, PlayerFPair},
+            bets_after70: hashset!{ Banker, Player, Tie, BankerF4, PlayerF4},
         }
     }
 
-    pub fn valid_bets(&self, hands: usize) -> &HashSet<Bets> {
+    fn valid_bets(&self, hands: usize) -> &HashSet<Bets> {
         if hands <= 70 {
             &self.all_bets
         } else {

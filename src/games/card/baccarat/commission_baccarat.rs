@@ -57,30 +57,35 @@ impl BetSerde for Bets {
     }
 }
 
-pub struct CommissionBaccarat {
+pub struct CommissionBaccaratGame {
     all_bets: HashSet<Bets>,
     bets_after40: HashSet<Bets>,
     bets_after70: HashSet<Bets>,
 }
 
-pub fn all_bets() -> HashSet<Bets> {
-    hashset!{ Banker,Player,Tie,
-    BankerN8,PlayerN8, BankerN9, PlayerN9,
-    Super6, BankerPair,PlayerPair, Big, Small }
+impl CommissionBaccaratGame {
+    pub fn new() -> CommissionBaccaratGame {
+        CommissionBaccaratGame {
+            all_bets: hashset!{ Banker, Player, Tie, BankerN8, PlayerN8, BankerN9, PlayerN9, Super6, BankerPair, PlayerPair, Big, Small },
+            bets_after40: hashset!{ Banker, Player, Tie, BankerN8, PlayerN8, BankerN9, PlayerN9, Super6, BankerPair,PlayerPair},
+            bets_after70: hashset!{ Banker, Player, Tie, BankerN8, PlayerN8, BankerN9, PlayerN9, Super6},
+        }
+    }
+
+    pub fn valid_bets(&self, hands: usize) -> &HashSet<Bets> {
+        if hands <= 40 {
+            &self.all_bets
+        } else if hands <= 70 {
+            &self.bets_after40
+        } else {
+            &self.bets_after70
+        }
+    }
 }
 
-pub fn bets_after40() -> HashSet<Bets> {
-    hashset!{ Banker,Player,Tie,
-    BankerN8,PlayerN8, BankerN9, PlayerN9,
-    Super6, BankerPair,PlayerPair}
+impl Game for CommissionBaccaratGame {
+    type B = Bets;
 }
-
-pub fn bets_after70() -> HashSet<Bets> {
-    hashset!{ Banker,Player,Tie,
-    BankerN8,PlayerN8, BankerN9, PlayerN9,
-    Super6}
-}
-
 
 pub fn payout_map(b: &Baccarat) -> HashMap<Bets, f64> {
     let result = b.result();
@@ -144,29 +149,7 @@ fn result_payout_map(result: Result) -> HashMap<Bets, f64> {
     map
 }
 
-impl CommissionBaccarat {
-    pub fn new() -> CommissionBaccarat {
-        CommissionBaccarat {
-            all_bets: all_bets(),
-            bets_after40: bets_after40(),
-            bets_after70: bets_after70(),
-        }
-    }
 
-    pub fn valid_bets(&self, hands: usize) -> &HashSet<Bets> {
-        if hands <= 40 {
-            &self.all_bets
-        } else if hands <= 70 {
-            &self.bets_after40
-        } else {
-            &self.bets_after70
-        }
-    }
-}
-
-impl Game for CommissionBaccarat {
-    type B = Bets;
-}
 
 #[cfg(test)]
 mod tests {
@@ -175,7 +158,7 @@ mod tests {
 
     #[test]
     fn test_valid_bets() {
-        let b = CommissionBaccarat::new();
+        let b = CommissionBaccaratGame::new();
         let r = b.valid_bets(1);
         assert_eq!(12, r.len());
         let r = b.valid_bets(41);
