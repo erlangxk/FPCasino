@@ -62,15 +62,15 @@ mod tests {
         all_bets(&mut m);
 
         let r = Result::new(1, 1, 1);
-        let r1:Vec<_> =m.iter().filter(|&(id,bet)|bet.bingo(&r)>0).collect();
+        let r1:Vec<_> =m.iter().filter(|&(_,bet)|bet.bingo(&r)>0).collect();
         assert_eq!(r1.len(), 1);
 
         let r = Result::new(1, 1, 2);
-        let r1:Vec<_> =m.iter().filter(|&(id,bet)|bet.bingo(&r)>0).collect();
+        let r1:Vec<_> =m.iter().filter(|&(_,bet)|bet.bingo(&r)>0).collect();
         assert_eq!(r1.len(), 2);
 
         let r = Result::new(1, 2, 3);
-        let r1:Vec<_> =m.iter().filter(|&(id,bet)|bet.bingo(&r)>0).collect();
+        let r1:Vec<_> =m.iter().filter(|&(_,bet)|bet.bingo(&r)>0).collect();
         assert_eq!(r1.len(), 3);
     }
 }

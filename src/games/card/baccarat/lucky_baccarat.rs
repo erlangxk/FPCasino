@@ -29,7 +29,6 @@ pub enum Bets {
 use self::Bets::*;
 
 impl BetSerde for Bets {
-    
     fn to_u16(&self) -> u16 {
         match *self {
             Banker => 1,
@@ -53,7 +52,7 @@ impl BetSerde for Bets {
             TieOn789 => 19,
         }
     }
-    
+
     fn from_u16(id: u16) -> Option<Bets> {
         match id {
             1 => Some(Banker),
@@ -80,9 +79,8 @@ impl BetSerde for Bets {
     }
 }
 
-#[inline]
-fn all_bets() -> HashSet<Bets> {
-    hashset!{
+lazy_static! {
+    static ref ALL_BETS:HashSet<Bets> = hashset!{
         Banker,Player,Tie,
         BankerBlack, BankerRed, BankerLuckyPair,
         PlayerBlack, PlayerRed, PlayerLuckyPair,
@@ -90,46 +88,24 @@ fn all_bets() -> HashSet<Bets> {
         PlayerWinsOn123, PlayerWinsOn456, PlayerWinsOn789,
         TieOn0123, TieOn456,TieOn789,
         Lucky6,
-    }
-}
-
-#[inline]
-fn bets_after40() -> HashSet<Bets> {
-    hashset!{
+    };
+    static ref BETS_AFTER40:HashSet<Bets> = hashset!{
         Banker,Player,Tie,
         BankerBlack, BankerRed, BankerLuckyPair,
         PlayerBlack, PlayerRed, PlayerLuckyPair,
-    }
+    };
+    static ref BETS_AFTER60:HashSet<Bets> =hashset!{ Banker,Player,Tie };
 }
 
-#[inline]
-fn bets_after60() -> HashSet<Bets> {
-    hashset!{ Banker,Player,Tie }
-}
+pub struct LuckyBaccaratGame;
 
-struct LuckyBaccaratGame {
-    all_bets: HashSet<Bets>,
-    bets_after40: HashSet<Bets>,
-    bets_after60: HashSet<Bets>,
-}
-
-impl LuckyBaccaratGame {
-    pub fn new() -> LuckyBaccaratGame {
-        LuckyBaccaratGame {
-            all_bets: all_bets(),
-            bets_after40: bets_after40(),
-            bets_after60: bets_after60(),
-        }
-    }
-
-    pub fn valid_bets(&self, hands: usize) -> &HashSet<Bets> {
-        if hands <= 40 {
-            &self.all_bets
-        } else if hands <= 60 {
-            &self.bets_after40
-        } else {
-            &self.bets_after60
-        }
+pub fn valid_bets(hands: usize) -> &'static HashSet<Bets> {
+    if hands <= 40 {
+        &ALL_BETS
+    } else if hands <= 60 {
+        &BETS_AFTER40
+    } else {
+        &BETS_AFTER60
     }
 }
 
@@ -222,11 +198,9 @@ fn ratio_of_lucky_pair(c1: &Card, c2: &Card) -> Option<f64> {
     None
 }
 
-
 #[cfg(test)]
 mod tests {
     use super::*;
-    use super::Bets::*;
     use games::card::serde::str_to_card;
     use games::card::Card;
     fn card(s: &str) -> Card {
@@ -293,13 +267,12 @@ mod tests {
 
     #[test]
     fn test_valid_bets() {
-        let b = LuckyBaccaratGame::new();
+      
 
-        let all = b.valid_bets(40);
+        let all = valid_bets(40);
         assert_eq!(19, all.len());
-        assert_eq!(*all, all_bets());
 
-        let after40 = b.valid_bets(41);
+        let after40 = valid_bets(41);
         assert_eq!(9, after40.len());
         assert_eq!(false, after40.contains(&BankerWinsOn123));
         assert_eq!(false, after40.contains(&BankerWinsOn456));
@@ -312,8 +285,7 @@ mod tests {
         assert_eq!(false, after40.contains(&TieOn789));
         assert_eq!(false, after40.contains(&Lucky6));
 
-
-        let after40 = b.valid_bets(60);
+        let after40 = valid_bets(60);
         assert_eq!(9, after40.len());
         assert_eq!(false, after40.contains(&BankerWinsOn123));
         assert_eq!(false, after40.contains(&BankerWinsOn456));
@@ -326,7 +298,7 @@ mod tests {
         assert_eq!(false, after40.contains(&TieOn789));
         assert_eq!(false, after40.contains(&Lucky6));
 
-        let after60 = b.valid_bets(61);
+        let after60 = valid_bets(61);
         assert_eq!(3, after60.len());
         assert_eq!(false, after60.contains(&BankerBlack));
         assert_eq!(false, after60.contains(&BankerRed));
@@ -337,31 +309,61 @@ mod tests {
     }
 
     #[test]
-    fn test_result_payout_map_tie(){
+    fn test_result_payout_map_tie() {
         let r = result_payout_map(Result::Tie(0));
-        assert_eq!(r, hashmap!{TieOn0123 => 46.0, Tie =>9.0, Player => 1.0, Banker => 1.0});
+        assert_eq!(
+            r,
+            hashmap!{TieOn0123 => 46.0, Tie =>9.0, Player => 1.0, Banker => 1.0}
+        );
         let r = result_payout_map(Result::Tie(1));
-        assert_eq!(r, hashmap!{TieOn0123 => 46.0, Tie =>9.0, Player => 1.0, Banker => 1.0});
+        assert_eq!(
+            r,
+            hashmap!{TieOn0123 => 46.0, Tie =>9.0, Player => 1.0, Banker => 1.0}
+        );
         let r = result_payout_map(Result::Tie(2));
-        assert_eq!(r, hashmap!{TieOn0123 => 46.0, Tie =>9.0, Player => 1.0, Banker => 1.0});
+        assert_eq!(
+            r,
+            hashmap!{TieOn0123 => 46.0, Tie =>9.0, Player => 1.0, Banker => 1.0}
+        );
         let r = result_payout_map(Result::Tie(3));
-        assert_eq!(r, hashmap!{TieOn0123 => 46.0, Tie =>9.0, Player => 1.0, Banker => 1.0});
+        assert_eq!(
+            r,
+            hashmap!{TieOn0123 => 46.0, Tie =>9.0, Player => 1.0, Banker => 1.0}
+        );
         let r = result_payout_map(Result::Tie(4));
-        assert_eq!(r, hashmap!{TieOn456 => 25.0, Tie =>9.0, Player => 1.0, Banker => 1.0});
+        assert_eq!(
+            r,
+            hashmap!{TieOn456 => 25.0, Tie =>9.0, Player => 1.0, Banker => 1.0}
+        );
         let r = result_payout_map(Result::Tie(5));
-        assert_eq!(r, hashmap!{TieOn456 => 25.0, Tie =>9.0, Player => 1.0, Banker => 1.0});
+        assert_eq!(
+            r,
+            hashmap!{TieOn456 => 25.0, Tie =>9.0, Player => 1.0, Banker => 1.0}
+        );
         let r = result_payout_map(Result::Tie(6));
-        assert_eq!(r, hashmap!{TieOn456 => 25.0, Tie =>9.0, Player => 1.0, Banker => 1.0, Lucky6 =>7.0});
+        assert_eq!(
+            r,
+            hashmap!{TieOn456 => 25.0, Tie =>9.0, Player => 1.0, Banker => 1.0, Lucky6 =>7.0}
+        );
         let r = result_payout_map(Result::Tie(7));
-        assert_eq!(r, hashmap!{TieOn789 => 20.0, Tie =>9.0, Player => 1.0, Banker => 1.0});
+        assert_eq!(
+            r,
+            hashmap!{TieOn789 => 20.0, Tie =>9.0, Player => 1.0, Banker => 1.0}
+        );
         let r = result_payout_map(Result::Tie(8));
-        assert_eq!(r, hashmap!{TieOn789 => 20.0, Tie =>9.0, Player => 1.0, Banker => 1.0});
+        assert_eq!(
+            r,
+            hashmap!{TieOn789 => 20.0, Tie =>9.0, Player => 1.0, Banker => 1.0}
+        );
         let r = result_payout_map(Result::Tie(9));
-        assert_eq!(r, hashmap!{TieOn789 => 20.0, Tie =>9.0, Player => 1.0, Banker => 1.0});
+        assert_eq!(
+            r,
+            hashmap!{TieOn789 => 20.0, Tie =>9.0, Player => 1.0, Banker => 1.0}
+        );
     }
 
     #[test]
-    fn test_result_payout_map_banker(){
+    fn test_result_payout_map_banker() {
         let r = result_payout_map(Result::Banker(1));
         assert_eq!(r, hashmap!{BankerWinsOn123 => 32.0, Banker => 2.0});
 
@@ -373,16 +375,19 @@ mod tests {
 
         let r = result_payout_map(Result::Banker(4));
         assert_eq!(r, hashmap!{BankerWinsOn456 => 7.0, Banker => 2.0});
-        
+
         let r = result_payout_map(Result::Banker(5));
         assert_eq!(r, hashmap!{BankerWinsOn456 => 7.0, Banker => 2.0});
-        
+
         let r = result_payout_map(Result::Banker(6));
-        assert_eq!(r, hashmap!{BankerWinsOn456 => 7.0, Banker => 1.5, Lucky6 => 7.0});
-        
+        assert_eq!(
+            r,
+            hashmap!{BankerWinsOn456 => 7.0, Banker => 1.5, Lucky6 => 7.0}
+        );
+
         let r = result_payout_map(Result::Banker(7));
         assert_eq!(r, hashmap!{BankerWinsOn789 => 3.0, Banker => 2.0});
-        
+
         let r = result_payout_map(Result::Banker(8));
         assert_eq!(r, hashmap!{BankerWinsOn789 => 3.0, Banker => 2.0});
 
@@ -390,8 +395,8 @@ mod tests {
         assert_eq!(r, hashmap!{BankerWinsOn789 => 3.0, Banker => 2.0});
     }
 
-     #[test]
-    fn test_result_payout_map_player(){
+    #[test]
+    fn test_result_payout_map_player() {
         let r = result_payout_map(Result::Player(1));
         assert_eq!(r, hashmap!{PlayerWinsOn123 => 32.0, Player => 2.0});
 
@@ -408,14 +413,17 @@ mod tests {
         assert_eq!(r, hashmap!{PlayerWinsOn456 => 9.0, Player => 2.0});
 
         let r = result_payout_map(Result::Player(6));
-        assert_eq!(r, hashmap!{PlayerWinsOn456 => 9.0, Player => 2.0, Lucky6 => 7.0});
+        assert_eq!(
+            r,
+            hashmap!{PlayerWinsOn456 => 9.0, Player => 2.0, Lucky6 => 7.0}
+        );
 
         let r = result_payout_map(Result::Player(7));
         assert_eq!(r, hashmap!{PlayerWinsOn789 => 3.0, Player => 2.0});
 
         let r = result_payout_map(Result::Player(8));
         assert_eq!(r, hashmap!{PlayerWinsOn789 => 3.0, Player => 2.0});
-        
+
         let r = result_payout_map(Result::Player(9));
         assert_eq!(r, hashmap!{PlayerWinsOn789 => 3.0, Player => 2.0});
     }

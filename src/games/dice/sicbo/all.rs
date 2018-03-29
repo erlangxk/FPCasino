@@ -1,12 +1,12 @@
 use std::collections::HashMap;
 use super::{double, pair, simple, single, total, triple, BetKind, Result};
 
-struct Sicbo {
+pub struct Sicbo {
     all_bets: HashMap<u16, Box<BetKind>>,
 }
 
 impl Sicbo {
-    fn new() -> Sicbo {
+    pub fn new() -> Sicbo {
         let mut map = HashMap::<u16, Box<BetKind>>::new();
         simple::all_bets(&mut map);
         single::all_bets(&mut map);
@@ -17,7 +17,7 @@ impl Sicbo {
         Sicbo { all_bets: map }
     }
 
-    fn valid_bets(&self, bet_id: u16) -> bool {
+    pub fn valid_bets(&self, bet_id: u16) -> bool {
         self.all_bets.contains_key(&bet_id)
     }
 

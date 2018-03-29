@@ -13,26 +13,18 @@ pub enum Bets {
 }
 
 use self::Bets::*;
+pub struct DragonTigerGame;
 
-pub struct DragonTigerGame {
-    all_bets: HashSet<Bets>,
-    bets_after60: HashSet<Bets>,
+lazy_static! {
+    static ref ALL_BETS:HashSet<Bets> = hashset!{Dragon,Tiger,Tie, DragonEven, DragonOdd, TigerOdd, TigerEven};
+    static ref BETS_AFTER60:HashSet<Bets> = hashset!{Dragon,Tiger,Tie};
 }
 
-impl DragonTigerGame {
-    fn valid_bets(&self, hands: u8) -> &HashSet<Bets> {
-        if hands <= 60 {
-            &self.all_bets
-        } else {
-            &self.bets_after60
-        }
-    }
-
-    pub fn new() -> DragonTigerGame {
-        DragonTigerGame {
-            all_bets: hashset!{Dragon,Tiger,Tie, DragonEven, DragonOdd, TigerOdd, TigerEven},
-            bets_after60: hashset!{Dragon,Tiger,Tie},
-        }
+pub fn valid_bets(hands: u8) -> &'static HashSet<Bets> {
+    if hands <= 60 {
+        &ALL_BETS
+    } else {
+        &BETS_AFTER60
     }
 }
 

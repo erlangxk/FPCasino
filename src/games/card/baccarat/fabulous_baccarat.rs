@@ -28,7 +28,7 @@ impl BetSerde for Bets {
             PlayerF4 => 7,
         }
     }
-    
+
     fn from_u16(id: u16) -> Option<Bets> {
         match id {
             1 => Some(Banker),
@@ -43,27 +43,20 @@ impl BetSerde for Bets {
     }
 }
 
-struct FabulousBaccaratGame {
-    all_bets: HashSet<Bets>,
-    bets_after70: HashSet<Bets>,
+lazy_static! {
+    static ref ALL_BETS:HashSet<Bets> = hashset!{ Banker, Player, Tie, BankerF4, PlayerF4, BankerFPair, PlayerFPair};
+    static ref BETS_AFTER70:HashSet<Bets> = hashset!{ Banker, Player, Tie, BankerF4, PlayerF4};
 }
 
-impl FabulousBaccaratGame {
-    pub fn new() -> FabulousBaccaratGame {
-        FabulousBaccaratGame {
-            all_bets: hashset!{ Banker, Player, Tie, BankerF4, PlayerF4, BankerFPair, PlayerFPair},
-            bets_after70: hashset!{ Banker, Player, Tie, BankerF4, PlayerF4},
-        }
-    }
-
-    fn valid_bets(&self, hands: usize) -> &HashSet<Bets> {
-        if hands <= 70 {
-            &self.all_bets
-        } else {
-            &self.bets_after70
-        }
+pub fn valid_bets(hands: usize) -> &'static HashSet<Bets> {
+    if hands <= 70 {
+        &ALL_BETS
+    } else {
+        &BETS_AFTER70
     }
 }
+
+pub struct FabulousBaccaratGame;
 
 pub fn payout_map(b: &Baccarat) -> HashMap<Bets, f64> {
     let mut map = result_payout_map(b.result());
@@ -126,44 +119,39 @@ fn fabulous_pair(first2: (Card, Card)) -> Option<f64> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use super::Bets::*;
 
     #[test]
     fn test_result_payout_map() {
         let r = Result::Tie(1);
         let m = result_payout_map(r);
-        assert_eq!(
-            m,
-            hashmap!{Banker=> 1.0, Player=> 1.0, Tie=> 9.0}
-        );
+        assert_eq!(m, hashmap!{Banker=> 1.0, Player=> 1.0, Tie=> 9.0});
 
         let r = Result::Banker(4);
         let m = result_payout_map(r);
-        assert_eq!(m,hashmap!{Banker=> 1.0, BankerF4=> 21.0});
+        assert_eq!(m, hashmap!{Banker=> 1.0, BankerF4=> 21.0});
 
         let r = Result::Banker(1);
         let m = result_payout_map(r);
-        assert_eq!(m,hashmap!{Banker=> 3.0});
+        assert_eq!(m, hashmap!{Banker=> 3.0});
 
         let r = Result::Banker(9);
         let m = result_payout_map(r);
-        assert_eq!(m,hashmap!{Banker=> 2.0});
+        assert_eq!(m, hashmap!{Banker=> 2.0});
 
         let r = Result::Player(4);
         let m = result_payout_map(r);
-        assert_eq!(m,hashmap!{Player=> 1.5, PlayerF4=> 41.0});
+        assert_eq!(m, hashmap!{Player=> 1.5, PlayerF4=> 41.0});
 
         let r = Result::Player(1);
         let m = result_payout_map(r);
-        assert_eq!(m,hashmap!{Player=> 3.0});
+        assert_eq!(m, hashmap!{Player=> 3.0});
 
         let r = Result::Player(9);
         let m = result_payout_map(r);
-        assert_eq!(m,hashmap!{Player=> 2.0});
+        assert_eq!(m, hashmap!{Player=> 2.0});
 
         let r = Result::Player(8);
         let m = result_payout_map(r);
-        assert_eq!(m,hashmap!{Player=> 2.0});
+        assert_eq!(m, hashmap!{Player=> 2.0});
     }
 }
-

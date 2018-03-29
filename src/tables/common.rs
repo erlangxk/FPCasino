@@ -1,24 +1,23 @@
 use std::hash::Hash;
 use std::collections::HashMap;
-use games::{BetSerde, Game};
+use games::Game;
 
-struct Limit(f64, f64);
+pub struct Limit(f64, f64);
 
 impl Limit {
-    fn min(&self) -> f64 {
+    pub fn min(&self) -> f64 {
         self.0
     }
-    fn max(&self) -> f64 {
+    pub fn max(&self) -> f64 {
         self.1
     }
 }
 
-
 #[derive(Debug)]
-struct PlayerBet<T: Eq + Hash> {
-    uuid: String,
-    user_id: String,
-    bets: HashMap<T, f64>,
+pub struct PlayerBet<T: Eq + Hash> {
+    pub uuid: String,
+    pub user_id: String,
+    pub bets: HashMap<T, f64>,
 }
 
 impl<T: Eq + Hash> PlayerBet<T> {
@@ -31,32 +30,31 @@ impl<T: Eq + Hash> PlayerBet<T> {
     }
 }
 
-struct Round {
-    id: u64,
-    hand: u8,
-    start_time: u64,
-    end_time: u64,
+pub struct Round {
+    pub id: u64,
+    pub hand: u8,
+    pub start_time: u64,
+    pub end_time: u64,
 }
 
-
-struct Table<G: Game> {
-    id: u16,
-    game: G,
-    round: Round,
-    current_bets: Vec<PlayerBet<G::B>>,
-    previous_bets: Vec<PlayerBet<G::B>>,
+pub struct Table<G: Game> {
+    pub id: u16,
+    pub game: G,
+    pub round: Round,
+    pub current_bets: Vec<PlayerBet<G::B>>,
+    pub previous_bets: Vec<PlayerBet<G::B>>,
 }
 
 impl<G: Game> Table<G> {
     pub fn bet(
         &mut self,
-        user_id: &str,
-        min_limit: f64,
-        max_limit: f64,
-        round_id: u64,
+        _user_id: &str,
+        _min_limit: f64,
+        _max_limit: f64,
+        _round_id: u64,
         bets: HashMap<u16, f64>,
     ) -> f64 {
-        let checked_bets = self.game.from_raw_bets(&bets);
+        let _checked_bets = self.game.from_raw_bets(&bets);
         32.0
     }
 }

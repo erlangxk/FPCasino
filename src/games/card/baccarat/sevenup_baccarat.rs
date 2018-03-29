@@ -21,7 +21,7 @@ impl BetSerde for Bets {
             Super7 => 4,
         }
     }
-    
+
     fn from_u16(id: u16) -> Option<Bets> {
         match id {
             1 => Some(Banker),
@@ -33,25 +33,18 @@ impl BetSerde for Bets {
     }
 }
 
-struct SevenupBaccaratGame {
-    all_bets: HashSet<Bets>,
-    bets_after40: HashSet<Bets>,
+lazy_static! {
+    static ref ALL_BETS:HashSet<Bets> = hashset!{ Banker,Player,Tie,Super7};
+    static ref BETS_AFTER40:HashSet<Bets> = hashset!{ Banker,Player,Tie};
 }
 
-impl SevenupBaccaratGame {
-    pub fn new() -> SevenupBaccaratGame {
-        SevenupBaccaratGame {
-            all_bets:  hashset!{ Banker,Player,Tie,Super7},
-            bets_after40:  hashset!{ Banker,Player,Tie},
-        }
-    }
+pub struct SevenupBaccaratGame;
 
-    fn valid_bets(&self, hands: usize) -> &HashSet<Bets> {
-        if hands <= 40 {
-            &self.all_bets
-        } else {
-            &self.bets_after40
-        }
+pub fn valid_bets(hands: usize) -> &'static HashSet<Bets> {
+    if hands <= 40 {
+        &ALL_BETS
+    } else {
+        &BETS_AFTER40
     }
 }
 
@@ -108,8 +101,7 @@ mod tests {
     use super::*;
     use games::card::serde::str_to_card;
     use games::card::Card;
-    use super::Bets::*;
-    
+
     fn card(s: &str) -> Card {
         str_to_card(s).unwrap()
     }
@@ -168,10 +160,7 @@ mod tests {
         assert_eq!(2, b.banker_total_cards());
         assert_eq!(Result::Tie(7), b.result());
         let m = payout_map(&b);
-        assert_eq!(
-            m,
-            hashmap!{Banker=>1.0, Player=>1.0, Tie=>10.0}
-        );
+        assert_eq!(m, hashmap!{Banker=>1.0, Player=>1.0, Tie=>10.0});
     }
 
     #[test]
@@ -181,10 +170,7 @@ mod tests {
         assert_eq!(2, b.banker_total_cards());
         assert_eq!(Result::Tie(8), b.result());
         let m = payout_map(&b);
-        assert_eq!(
-            m,
-            hashmap!{Banker=>1.0, Player=>1.0, Tie=>8.0}
-        );
+        assert_eq!(m, hashmap!{Banker=>1.0, Player=>1.0, Tie=>8.0});
     }
 
     #[test]
@@ -216,14 +202,10 @@ mod tests {
 
     #[test]
     fn test_valid_bets() {
-        let b = SevenupBaccaratGame::new();
-        let s1 = b.valid_bets(40);
+        let s1 = valid_bets(40);
         assert_eq!(4, s1.len());
-        assert_eq!(
-            hashset!{Banker,Player,Tie,Super7},
-            *s1
-        );
-        let s1 = b.valid_bets(41);
+        assert_eq!(hashset!{Banker,Player,Tie,Super7}, *s1);
+        let s1 = valid_bets(41);
         assert_eq!(3, s1.len());
         assert_eq!(hashset!{Banker,Player,Tie}, *s1);
     }

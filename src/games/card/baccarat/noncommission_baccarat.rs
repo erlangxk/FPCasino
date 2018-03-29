@@ -37,7 +37,7 @@ impl BetSerde for Bets {
             Small => 12,
         }
     }
-    
+
     fn from_u16(id: u16) -> Option<Bets> {
         match id {
             1 => Some(Banker),
@@ -57,48 +57,25 @@ impl BetSerde for Bets {
     }
 }
 
-pub struct NonCommissionBaccaratGame {
-    all_bets: HashSet<Bets>,
-    bets_after40: HashSet<Bets>,
-    bets_after70: HashSet<Bets>,
+lazy_static!{
+    static ref ALL_BETS:HashSet<Bets>= hashset!{ Banker, Player, Tie, BankerN8, PlayerN8, BankerN9, PlayerN9, Super6, BankerPair, PlayerPair, Big, Small };
+    static ref BETS_AFTER40:HashSet<Bets> = hashset!{ Banker, Player, Tie, BankerN8, PlayerN8, BankerN9, PlayerN9, Super6, BankerPair, PlayerPair};
+    static ref BETS_AFTER70:HashSet<Bets> = hashset!{ Banker, Player, Tie, BankerN8, PlayerN8, BankerN9, PlayerN9, Super6};
 }
 
-#[inline]
-fn all_bets() -> HashSet<Bets> {
-    hashset!{ Banker, Player, Tie, BankerN8, PlayerN8, BankerN9, PlayerN9, Super6, BankerPair, PlayerPair, Big, Small }
-}
+pub struct NonCommissionBaccaratGame;
 
-#[inline]
-pub fn bets_after40() -> HashSet<Bets> {
-    hashset!{ Banker, Player, Tie, BankerN8, PlayerN8, BankerN9, PlayerN9, Super6, BankerPair, PlayerPair}
-}
-
-#[inline]
-pub fn bets_after70() -> HashSet<Bets> {
-    hashset!{ Banker, Player, Tie, BankerN8, PlayerN8, BankerN9, PlayerN9, Super6}
-}
-
-impl NonCommissionBaccaratGame {
-    pub fn new() -> NonCommissionBaccaratGame {
-        NonCommissionBaccaratGame {
-            all_bets: all_bets(),
-            bets_after40: bets_after40(),
-            bets_after70: bets_after70(),
-        }
-    }
-
-    fn valid_bets(&self, hands: usize) -> &HashSet<Bets> {
-        if hands <= 40 {
-            &self.all_bets
-        } else if hands <= 70 {
-            &self.bets_after40
-        } else {
-            &self.bets_after70
-        }
+pub fn valid_bets(hands: usize) -> &'static HashSet<Bets> {
+    if hands <= 40 {
+        &ALL_BETS
+    } else if hands <= 70 {
+        &BETS_AFTER40
+    } else {
+        &BETS_AFTER70
     }
 }
 
-fn payout_map(b: &Baccarat) -> HashMap<Bets, f64> {
+pub fn payout_map(b: &Baccarat) -> HashMap<Bets, f64> {
     let result = b.result();
     let mut map = result_payout_map(result);
     side_bet(b, result, &mut map);
@@ -164,21 +141,17 @@ fn result_payout_map(result: Result) -> HashMap<Bets, f64> {
     map
 }
 
-
-
 #[cfg(test)]
 mod tests {
     use super::*;
-    use super::Bets::*;
 
     #[test]
     fn test_valid_bets() {
-        let b = NonCommissionBaccaratGame::new();
-        let r = b.valid_bets(1);
+        let r = valid_bets(1);
         assert_eq!(12, r.len());
-        let r = b.valid_bets(41);
+        let r = valid_bets(41);
         assert_eq!(10, r.len());
-        let r = b.valid_bets(71);
+        let r = valid_bets(71);
         assert_eq!(8, r.len())
     }
 

@@ -1,12 +1,12 @@
 use std::collections::HashMap;
 use super::{corner, line, split, straight, street, simple, BetKind};
 
-struct Roulette {
+pub struct Roulette {
     all_bets: HashMap<u16, Box<BetKind>>,
 }
 
 impl Roulette {
-    fn new() -> Roulette {
+    pub fn new() -> Roulette {
         let mut map = HashMap::<u16, Box<BetKind>>::new();
         simple::all_bets(&mut map);
         straight::all_bets(&mut map);
@@ -17,11 +17,11 @@ impl Roulette {
         Roulette { all_bets: map }
     }
 
-    fn valid_bets(&self, bet_id: u16) -> bool {
+    pub fn valid_bets(&self, bet_id: u16) -> bool {
         self.all_bets.contains_key(&bet_id)
     }
 
-    fn payout_map(&self, ball: u8) -> HashMap<u16, f64> {
+    pub fn payout_map(&self, ball: u8) -> HashMap<u16, f64> {
         self.all_bets
             .iter()
             .filter(|&(_, b)| b.bingo(ball))

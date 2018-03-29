@@ -1,6 +1,6 @@
 use std::collections::{HashMap, HashSet};
 use super::common::{Baccarat, Result};
-use games::{BetSerde, Game};
+use games::BetSerde;
 
 #[derive(Hash, PartialEq, Eq, Debug)]
 pub enum Bets {
@@ -57,35 +57,23 @@ impl BetSerde for Bets {
     }
 }
 
-pub struct CommissionBaccaratGame {
-    all_bets: HashSet<Bets>,
-    bets_after40: HashSet<Bets>,
-    bets_after70: HashSet<Bets>,
+lazy_static! {
+    static ref ALL_BETS:HashSet<Bets> = hashset!{ Banker, Player, Tie, BankerN8, PlayerN8, BankerN9, PlayerN9, Super6, BankerPair, PlayerPair, Big, Small };
+    static ref BETS_AFTER40:HashSet<Bets> = hashset!{ Banker, Player, Tie, BankerN8, PlayerN8, BankerN9, PlayerN9, Super6, BankerPair,PlayerPair};
+    static ref BETS_AFTER70:HashSet<Bets> = hashset!{ Banker, Player, Tie, BankerN8, PlayerN8, BankerN9, PlayerN9, Super6};
 }
 
-impl CommissionBaccaratGame {
-    pub fn new() -> CommissionBaccaratGame {
-        CommissionBaccaratGame {
-            all_bets: hashset!{ Banker, Player, Tie, BankerN8, PlayerN8, BankerN9, PlayerN9, Super6, BankerPair, PlayerPair, Big, Small },
-            bets_after40: hashset!{ Banker, Player, Tie, BankerN8, PlayerN8, BankerN9, PlayerN9, Super6, BankerPair,PlayerPair},
-            bets_after70: hashset!{ Banker, Player, Tie, BankerN8, PlayerN8, BankerN9, PlayerN9, Super6},
-        }
-    }
-
-    pub fn valid_bets(&self, hands: usize) -> &HashSet<Bets> {
-        if hands <= 40 {
-            &self.all_bets
-        } else if hands <= 70 {
-            &self.bets_after40
-        } else {
-            &self.bets_after70
-        }
+pub fn valid_bets(hands: usize) -> &'static HashSet<Bets> {
+    if hands <= 40 {
+        &ALL_BETS
+    } else if hands <= 70 {
+        &BETS_AFTER40
+    } else {
+        &BETS_AFTER70
     }
 }
 
-impl Game for CommissionBaccaratGame {
-    type B = Bets;
-}
+pub struct CommissionBaccaratGame;
 
 pub fn payout_map(b: &Baccarat) -> HashMap<Bets, f64> {
     let result = b.result();
@@ -149,21 +137,17 @@ fn result_payout_map(result: Result) -> HashMap<Bets, f64> {
     map
 }
 
-
-
 #[cfg(test)]
 mod tests {
     use super::*;
-    use super::Bets::*;
 
     #[test]
     fn test_valid_bets() {
-        let b = CommissionBaccaratGame::new();
-        let r = b.valid_bets(1);
+        let r = valid_bets(1);
         assert_eq!(12, r.len());
-        let r = b.valid_bets(41);
+        let r = valid_bets(41);
         assert_eq!(10, r.len());
-        let r = b.valid_bets(71);
+        let r = valid_bets(71);
         assert_eq!(8, r.len())
     }
 
